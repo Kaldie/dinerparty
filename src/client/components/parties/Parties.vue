@@ -56,7 +56,9 @@ export default {
               lat : position.coords.latitude,
               lon : position.coords.longitude,
           }}
-          axios.get(`http://${Settings.server}:${Settings.port}/parties`, config).catch((error) => {
+          axios.get(`http://${Settings.server}:${Settings.port}/parties`, config)
+          .catch((error) => {
+            console.warn(error)
           }).then((response) => {
             this.parties = response.data
             return response.data

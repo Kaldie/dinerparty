@@ -23,8 +23,10 @@
     "moments": "^0.0.2",
     "npm-watch": "^0.5.0",
     "promise": "^8.0.2",
+    "vee-validate": "^2.2.2",
     "vue": "^2.5.17",
-    "vue-router": "^3.0.2"
+    "vue-router": "^3.0.2",
+    "vuex": "^3.1.0"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.2.0",
