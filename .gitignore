@@ -19,5 +19,9 @@ yarn-error.log*
 *.njsproj
 *.sln
 *.sw*.
+
+# DB files used for testing
 *.db
+
+# Parsed python files
 *.pyc
