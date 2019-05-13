@@ -1,22 +1,32 @@
+import random
+import uuid
 from flask_restful import Resource, reqparse
 from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required, jwt_refresh_token_required, get_jwt_identity, get_raw_jwt
 from server.model.user import UserModel
 from server.model.revoked_token import RevokedTokenModel
 
 parser = reqparse.RequestParser()
-parser.add_argument('username', help = 'This field cannot be blank', required = True)
-parser.add_argument('password', help = 'This field cannot be blank', required = True)
+parser.add_argument('username'    , help = 'This field cannot be blank'                 , required = True)
+parser.add_argument('password'    , help = 'This field cannot be blank'                 , required = True)
+parser.add_argument('email'       , help = 'This field cannot be blank'                 , required = False) 
+parser.add_argument('address'     , help = 'Address, street and house number'           , required = False, default = '')
+parser.add_argument('postalCode'  , help = 'Postal code, place where we host the party' , required = False, default = '')
+parser.add_argument('city'        , help = 'City of residence'                          , required = False, default = '')
+parser.add_argument('imagePath'   , help = 'Path of the the account image'              , required = False, default = '')
+
 
 class UserRegistration(Resource):
+
   def post(self):
     data = parser.parse_args()
 
     if UserModel.find_by_username(data['username']):
-      return {'message': 'User {} already exists'. format(data['username'])}
+      return {'message': 'User {} already exists'. format(data['username'])}, 500
 
     new_user = UserModel(
       username = data["username"],
-      password = UserModel.generate_hash(data["password"])
+      password = UserModel.generate_hash(data["password"]),
+      email = data["email"],
     )
 
     try:
@@ -26,30 +36,40 @@ class UserRegistration(Resource):
       return {
         'message': 'User {} has been created'.format(data['username']),
         'access_token': access_token,
-        'refresh_token': refresh_token
+        'refresh_token': refresh_token,
+        'username': new_user.username,
+        'email': new_user.email,
       }
     except:
       return { 'message': "Something has gone wrong"}, 500
 
 class UserLogin(Resource):
+  showDebugMessage = True
+  message = lambda x: "Unknown user or password" if not UserLogin.showDebugMessage else x
+
   def post(self):
     data = parser.parse_args()
     user = UserModel.find_by_username(data['username'])
+    
     if not user:
-      return {'message': 'User {} doesn\'t exists'. format(data['username'])}
+      UserModel.verify_hash(data["password"], uuid.uuid4().hex[0:int(random.random()*20)])
+      return {'message': UserLogin.message("Unknown User {}".format(data['username']))}, 404
 
     if UserModel.verify_hash(data["password"], user.password):
       access_token = create_access_token(identity = data['username'])
       refresh_token = create_refresh_token(identity = data['username'])
       return {'message': 'Logged in as {}'.format(user.username),
               'access_token': access_token,
-              'refresh_token': refresh_token
+              'refresh_token': refresh_token,
+              'username': user.username,
+              'email': user.email,
       }
     else:
-      return {"message":"Unknown credentials"}, 404
+      return {"message": UserLogin.message("Unknown password {} for user {}".format(data['password'],data['username']))}, 404
 
       
 class UserLogoutAccess(Resource):
+
   @jwt_required
   def post(self):
       jTokenId = get_raw_jwt()['jti']
@@ -62,6 +82,7 @@ class UserLogoutAccess(Resource):
       
       
 class UserLogoutRefresh(Resource):
+
   @jwt_refresh_token_required
   def post(self):
       jTokenId = get_raw_jwt()['jti']
@@ -75,6 +96,7 @@ class UserLogoutRefresh(Resource):
       
       
 class TokenRefresh(Resource):
+  
     @jwt_refresh_token_required
     def post(self):
       current_user = get_jwt_identity()
@@ -83,17 +105,10 @@ class TokenRefresh(Resource):
     
       
 class AllUsers(Resource):
+
   @jwt_required
   def get(self):
     return UserModel.return_all()
 
   def delete(self):
     return UserModel.delete_all()
-
-      
-class SecretResource(Resource):
-  @jwt_required
-  def get(self):
-    return {
-      'answer': 42
-    }

@@ -37,7 +37,7 @@ export default {
     return {
       position : {
         latitude: 40,
-        longtitude: 40
+        longitudinal: 40
       }
     }
   },
@@ -47,7 +47,7 @@ export default {
     const map = new mapboxgl.Map({
       container: 'map',
       style: 'mapbox://styles/mapbox/dark-v9',
-      center: [this.position.latitude, this.position.longtitude],
+      center: [this.position.latitude, this.position.longitudinal],
       zoom: 5.0,
       trackResize: true
     });

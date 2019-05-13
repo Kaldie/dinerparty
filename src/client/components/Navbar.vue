@@ -21,26 +21,14 @@
 
       <!-- Right aligned nav items -->
       <b-navbar-nav class="ml-auto">
-
-        <!-- <b-nav-form>
-          <b-form-input size="sm" class="mr-sm-2" type="text" placeholder="Search"/>
-          <b-button size="sm" class="my-2 my-sm-0" type="submit">Search</b-button>
-        </b-nav-form> -->
-
-        <!-- <b-nav-item-dropdown text="Lang" right>
-          <b-dropdown-item href="#">EN</b-dropdown-item>
-          <b-dropdown-item href="#">ES</b-dropdown-item>
-          <b-dropdown-item href="#">RU</b-dropdown-item>
-          <b-dropdown-item href="#">FA</b-dropdown-item>
-        </b-nav-item-dropdown> -->
-
         <b-nav-item-dropdown right>
           <!-- Using button-content slot -->
           <template slot="button-content">
             <em>User</em>
           </template>
-          <b-dropdown-item to="/profile">Profile</b-dropdown-item>
-          <b-dropdown-item to="/">Sign out</b-dropdown-item>
+          <b-dropdown-item v-show="notLogged()" to="/login">Sign in</b-dropdown-item>
+          <b-dropdown-item v-show="status.loggedIn" to="/profile">Profile</b-dropdown-item>
+          <b-dropdown-item v-show="status.loggedIn" v-on:click="logout">Sign out</b-dropdown-item>
         </b-nav-item-dropdown>
       </b-navbar-nav>
     </b-collapse>
@@ -58,3 +46,20 @@ nav {
   outline: none;
 }
 </style>
+
+<script>
+import {mapState, mapActions} from 'vuex'
+
+export default {
+  methods: {
+    ...mapActions('account', ['logout']),
+    notLogged() {
+      console.warn(this.status)
+      return this.status.loggedIn ? !this.status.loggedIn: true 
+    }
+  },
+  computed: {
+    ...mapState('account', ['status'])
+  },
+} 
+</script>

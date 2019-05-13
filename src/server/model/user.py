@@ -7,13 +7,19 @@ class UserModel(db.Model):
   id = db.Column(db.Integer, primary_key = True)
   username = db.Column(db.String(120), unique = True, nullable = False)
   password = db.Column(db.String(120), nullable = False)
-
+  email = db.Column(db.String(120))
+  address = db.Column(db.String(120))
+  postalCode = db.Column(db.String(120))
+  city = db.Column(db.String(120))
+  imagePath = db.Column(db.String(120))
+  
   @staticmethod
   def generate_hash(password):
     return sha256.hash(password)
 
   @staticmethod
   def verify_hash(password, hash):
+    print("hash", hash)
     return sha256.verify(password, hash)
 
   def save_to_db(self):
@@ -27,8 +33,12 @@ class UserModel(db.Model):
   @classmethod
   def return_all(self):
     return {'users': list(map(lambda user: {
-      'username': user.username,
-      'password': user.password
+      'username'    : user.username,
+      'password'    : user.password,
+      'address'     : user.address,
+      'postalCode'  : user.postalCode,
+      'city'        : user.city,
+      'imagePath'   : user.imagePath
     }, self.query.all()))}
 
   @classmethod

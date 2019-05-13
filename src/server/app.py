@@ -30,6 +30,7 @@ CORS(app)
 import server.view.users
 # from model.users import UsersModel
 from resources import users, parties
+from resources.party_participation import PartyParticipation
 from model.revoked_token import RevokedTokenModel
 
 Flask.env="debug"
@@ -60,10 +61,9 @@ api.add_resource(users.UserLogoutAccess, '/logout/access')
 api.add_resource(users.UserLogoutRefresh, '/logout/refresh')
 api.add_resource(users.TokenRefresh, '/token/refresh')
 api.add_resource(users.AllUsers, '/users')
-api.add_resource(users.SecretResource, '/secret')
-
 
 api.add_resource(parties.Party,'/party')
+api.add_resource(PartyParticipation,'/party_participation')
 
 
 

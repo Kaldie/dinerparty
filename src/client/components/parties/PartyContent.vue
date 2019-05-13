@@ -57,7 +57,7 @@ input[id^=datetimepicker] {
   },
   computed: {
     description: function() {
-      return`Cousine: ${this.party.cousine} \n${this.party.description}`
+      return`cousin: ${this.party.cousin} \n${this.party.description}`
     }
   }
 }

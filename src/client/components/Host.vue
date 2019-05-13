@@ -58,12 +58,12 @@
 "name":"first",
       "location": {
         "latitude":50.1,
-        "longtitude":24.123,
+        "longitudinal":24.123,
       },
       "description": "small party!",
-      "seets" : 5,
+      "seats" : 5,
       "tutorial": False,
-      "cousine": "Greek",
+      "cousin": "Greek",
       "date": str(datetime.date(2019, 12, 1)),
       "image": "http://127.0.0.1:5000/second.png",
 
