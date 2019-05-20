@@ -54,7 +54,6 @@ export default {
   methods: {
     ...mapActions('account', ['logout']),
     notLogged() {
-      console.warn(this.status)
       return this.status.loggedIn ? !this.status.loggedIn: true 
     }
   },

@@ -3,7 +3,6 @@ import axios from 'axios'
 import Settings from '@/client/settings.js'
 
 const login = (userName, password) => {  
-
   const config = {
     headers:  CrossOriginHeader,
     }
@@ -17,13 +16,17 @@ const login = (userName, password) => {
 
 const logout = () => {  
 
-  let config ={
-    headers: Object.assign(AuthHeader, CrossOriginHeader),
+  const refreshConfig = {
+    headers: Object.assign(RefreshHeader(), CrossOriginHeader)
   }
-  
-  return axios.post(`http://${Settings.server}:${Settings.port}/logout/refresh`, config)
+
+  let config ={
+    headers: Object.assign(AuthHeader(), CrossOriginHeader),
+  }
+ 
+  return axios.post(`http://${Settings.server}:${Settings.port}/logout/refresh`,{}, refreshConfig)
   .then(() => {
-    return axios.post(`http://${Settings.server}:${Settings.port}/logout/access`, config)
+    return axios.post(`http://${Settings.server}:${Settings.port}/logout/access`,{}, config)
     })
 }
 
@@ -39,7 +42,7 @@ const register = (user) => {
 const refreshToken = () => {
 
   const config = {
-    headers: Object.assign(RefreshHeader, CrossOriginHeader),
+    headers: Object.assign(RefreshHeader(), CrossOriginHeader),
     }
 
   return axios.post(`http://${Settings.server}:${Settings.port}/token/refresh`, config)
@@ -48,10 +51,14 @@ const refreshToken = () => {
 const getALl = () => {
 
   let config = {
-    headers: Object.assign(AuthHeader, CrossOriginHeader),
+    headers: Object.assign(AuthHeader(), CrossOriginHeader),
   }
 
   return axios.get(`http://${Settings.server}:${Settings.port}/users`, config)
+}
+
+const update = () => {
+  
 }
 
 

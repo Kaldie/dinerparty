@@ -1,16 +1,16 @@
 
 from flask import Flask, send_file
-from flask_restful import Api
+
 from flask_cors import CORS
+from flask_restful import Api
 from flask_sqlalchemy import SQLAlchemy
+from flask_marshmallow import Marshmallow
 from flask_jwt_extended import JWTManager
 
-from test_parties import testParties
-from test_users import testUsers
-
-import json
-
 app = Flask(__name__, static_url_path="")
+
+# add cross origin request sharing
+CORS(app)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -20,17 +20,15 @@ app.config['JWT_SECRET_KEY'] = 'jwt-secret-string'
 app.config['JWT_BLACKLIST_ENABLED'] = True
 app.config['JWT_BLACKLIST_TOKEN_CHECKS'] = ['access', 'refresh']
 
-db = SQLAlchemy(app)
 api = Api(app)
+db = SQLAlchemy(app)
+ma = Marshmallow(app)
 jwt = JWTManager(app)
 
-# add cross origin request sharing
-CORS(app)
+# import model
 
-import server.view.users
-# from model.users import UsersModel
-from resources import users, parties
-from resources.party_participation import PartyParticipation
+from resources import users, parties, party_participation
+#, 
 from model.revoked_token import RevokedTokenModel
 
 Flask.env="debug"
@@ -39,6 +37,7 @@ Flask.Debug=True
 
 @app.before_first_request
 def create_tables():
+  print("create_all here!!")
   db.create_all()
 
 @jwt.token_in_blacklist_loader
@@ -50,20 +49,16 @@ def check_if_token_in_blacklist(decrypted_token):
 def webpage():
   return send_file("/static/index.html")
 
-# @app.route('/parties')
-# def parties():
-#   return json.dumps(testParties)
-
-
 api.add_resource(users.UserRegistration, '/registration')
 api.add_resource(users.UserLogin, '/login')
 api.add_resource(users.UserLogoutAccess, '/logout/access')
 api.add_resource(users.UserLogoutRefresh, '/logout/refresh')
 api.add_resource(users.TokenRefresh, '/token/refresh')
 api.add_resource(users.AllUsers, '/users')
+api.add_resource(users.User,"/user")
 
 api.add_resource(parties.Party,'/party')
-api.add_resource(PartyParticipation,'/party_participation')
+# api.add_resource(party_participation.PartyParticipation,'/party_participation')
 
 
 

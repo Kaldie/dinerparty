@@ -1,75 +1,69 @@
 import random
 import uuid
-from flask_restful import Resource, reqparse
+from sqlalchemy.orm.exc import NoResultFound
+from flask import request
+from flask_restful import Resource
+from marshmallow import ValidationError
 from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required, jwt_refresh_token_required, get_jwt_identity, get_raw_jwt
+
 from server.model.user import UserModel
 from server.model.revoked_token import RevokedTokenModel
-
-parser = reqparse.RequestParser()
-parser.add_argument('username'    , help = 'This field cannot be blank'                 , required = True)
-parser.add_argument('password'    , help = 'This field cannot be blank'                 , required = True)
-parser.add_argument('email'       , help = 'This field cannot be blank'                 , required = False) 
-parser.add_argument('address'     , help = 'Address, street and house number'           , required = False, default = '')
-parser.add_argument('postalCode'  , help = 'Postal code, place where we host the party' , required = False, default = '')
-parser.add_argument('city'        , help = 'City of residence'                          , required = False, default = '')
-parser.add_argument('imagePath'   , help = 'Path of the the account image'              , required = False, default = '')
-
+from server.schema.user_schema import UserSchema
 
 class UserRegistration(Resource):
-
   def post(self):
-    data = parser.parse_args()
-
-    if UserModel.find_by_username(data['username']):
-      return {'message': 'User {} already exists'. format(data['username'])}, 500
-
-    new_user = UserModel(
-      username = data["username"],
-      password = UserModel.generate_hash(data["password"]),
-      email = data["email"],
-    )
+    try:
+      newUser = UserSchema(strict=True).load(request.form).data
+    except ValidationError as validationError:
+      return "User is not properly defined:"
 
     try:
-      new_user.save_to_db()
-      access_token = create_access_token(identity = data['username'])
-      refresh_token = create_refresh_token(identity = data['username'])
+      UserModel.find_by_username(newUser.username)
+      return {'message': 'User {} already exists'. format(newUser.username)}, 500
+    except NoResultFound:
+      pass
+
+    try:
+      newUser.addUser()
+      access_token = create_access_token(identity = {"username": newUser.username, "id": newUser.id})
+      refresh_token = create_refresh_token(identity = {"username": newUser.username, "id": newUser.id})
       return {
-        'message': 'User {} has been created'.format(data['username']),
+        'message': 'User {} has been created'.format(newUser.username),
         'access_token': access_token,
         'refresh_token': refresh_token,
-        'username': new_user.username,
-        'email': new_user.email,
+        'user': UserSchema().dump(newUser)
       }
-    except:
+    except Exception as error:
+      print(error)
       return { 'message': "Something has gone wrong"}, 500
 
 class UserLogin(Resource):
   showDebugMessage = True
-  message = lambda x: "Unknown user or password" if not UserLogin.showDebugMessage else x
+  message = staticmethod(lambda x: "Unknown user or password" if not UserLogin.showDebugMessage else x)
 
   def post(self):
-    data = parser.parse_args()
-    user = UserModel.find_by_username(data['username'])
-    
-    if not user:
-      UserModel.verify_hash(data["password"], uuid.uuid4().hex[0:int(random.random()*20)])
-      return {'message': UserLogin.message("Unknown User {}".format(data['username']))}, 404
+    user = UserSchema().load(request.form).data
 
-    if UserModel.verify_hash(data["password"], user.password):
-      access_token = create_access_token(identity = data['username'])
-      refresh_token = create_refresh_token(identity = data['username'])
+    if (not isinstance(user, UserModel)) or user.password is None:
+      return {"message": UserLogin.message("Username and password are required")}, 404
+
+    databaseUser = UserModel.find_by_username(username=user.username)
+    if not databaseUser:
+      UserModel.verify_hash("randomasss", UserModel.generate_hash(uuid.uuid4().hex[0:int(random.random()*20)]))
+      return {'message': UserLogin.message("Unknown User {}".format(user.username))}, 404
+
+    if UserModel.verify_hash(request.form["password"], databaseUser.password):
+      access_token = create_access_token(identity = {"username": databaseUser.username, "id": databaseUser.id})
+      refresh_token = create_refresh_token(identity = {"username": databaseUser.username, "id": databaseUser.id})
       return {'message': 'Logged in as {}'.format(user.username),
               'access_token': access_token,
               'refresh_token': refresh_token,
               'username': user.username,
-              'email': user.email,
-      }
+              'email': user.email}
     else:
-      return {"message": UserLogin.message("Unknown password {} for user {}".format(data['password'],data['username']))}, 404
+      return {"message": UserLogin.message("Unknown password {} for user {}".format(request.form["password"], user.username))}, 404
 
-      
 class UserLogoutAccess(Resource):
-
   @jwt_required
   def post(self):
       jTokenId = get_raw_jwt()['jti']
@@ -80,9 +74,7 @@ class UserLogoutAccess(Resource):
       except:
           return {'message': 'Something went wrong'}, 500
       
-      
 class UserLogoutRefresh(Resource):
-
   @jwt_refresh_token_required
   def post(self):
       jTokenId = get_raw_jwt()['jti']
@@ -94,21 +86,31 @@ class UserLogoutRefresh(Resource):
           return {'message': 'Something went wrong'}, 
       return {"message":"Token has been revoked"}
       
-      
 class TokenRefresh(Resource):
-  
     @jwt_refresh_token_required
     def post(self):
       current_user = get_jwt_identity()
       access_token = create_access_token(identity = current_user)
       return {'access_token': access_token}
     
-      
 class AllUsers(Resource):
-
   @jwt_required
   def get(self):
-    return UserModel.return_all()
+    return UserSchema().return_all()
 
   def delete(self):
     return UserModel.delete_all()
+
+class User(Resource):
+  @jwt_required
+  def get(self):
+    user = UserModel.find_by_id(get_jwt_identity()["id"])
+    return UserSchema().dump(user)
+
+  @jwt_required
+  def patch(self):
+    userSchema = UserSchema()
+    oldUser = UserModel.find_by_id(get_jwt_identity()["id"])
+    updatedUser = userSchema.load(request.form, instance = oldUser).data.update()
+    return userSchema.dump(updatedUser)
+    

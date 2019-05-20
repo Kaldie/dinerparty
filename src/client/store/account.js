@@ -25,16 +25,23 @@ const actions = {
     commit('logout')
   },
   register({ commit }, user) {
+    commit('registerRequest', user)
     UserService.register(user)
       .then(
         result => {
           commit('registerSucces', result)
           myRouter.push('/')
         },
-        error => {
-          commit('registerFailure', error)
-        }
+        error => commit('registerFailure', error)
       )
+  },
+  update({ commit }, user) {
+    commit('updateRequest', user)
+    UserService.update(user)
+    .then(
+      result => commit('updateSucces', result),
+      error => commit('updateFailure', error)
+    )
   },
   refresh( {commit} ) {
     commit('refresh')
@@ -79,6 +86,17 @@ const mutations = {
     localStorage.setItem('user', JSON.stringify(user))
   },
   registerFailure(state) {
+    state.status = {}
+    localStorage.removeItem('user')
+  },
+  updateRequest(state) {
+    state.status = {loggingIn: true}
+  },
+  updateSuccess(state, user) {
+    state.status = {loggedIn:true}
+    state.user = user
+  },
+  updateFailure(state) {
     state.status = {}
     localStorage.removeItem('user')
   },

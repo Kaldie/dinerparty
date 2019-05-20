@@ -1,39 +1,29 @@
-from flask_restful import Resource, reqparse
-from flask_jwt_extended import jwt_required
-from server.model.parties import PartyModel
-from server.model.party_participation import PartyParticipation
-import json
+from flask import request
+from flask_restful import Resource
+from flask_jwt_extended import jwt_required, get_jwt_identity
+from server.schema.party_schema import PartySchema
+from server.model.user import UserModel
+from server.model.party import PartyModel
 
 
 class Party(Resource):
-  
-  parser = reqparse.RequestParser()
-  parser.add_argument('name', help = 'Name of the party', required = True)
-  parser.add_argument('description', help = 'Short description of the party', required = False)
-  parser.add_argument('cousin', help = 'Type of cousin served at the party', required = False)
-  parser.add_argument('image', help = 'This field cannot be blank', required = False)
-  parser.add_argument('latitude', help = 'This field cannot be blank', required = False)
-  parser.add_argument('longitude', help = 'This field cannot be blank', required = False)
-  parser.add_argument('seats', type=int, help = 'This field cannot be blank', required = False)
-  parser.add_argument('teaching', type=bool, help = 'This field cannot be blank', required = False)
-  parser.add_argument('date', help = 'This field cannot be blank', required = False)
-
 
   def get(self):
-    data = self.parser.parse_args()
-    party = PartyModel.find_by_name(data['name'])
-    return {"message": "Found party {}".format(party.name),
-            "party":party.serialize}
-
+    party = PartySchema(strict=True).load(request.form).data
+    return {
+      "message": "Found party {}".format(party.name),
+      "party":PartySchema().dump(party)
+    }
 
   @jwt_required
   def post(self):
-    data = self.parser.parse_args()
-    party = PartyModel(**data)
+    user = UserModel().find_by_username(get_jwt_identity()["username"])
+    party = PartySchema(strict=True).load(request.form).data
+    party.host_id = user.id
     try:
-      party.save_to_db()
+      party.addParty()
       return {
-        'message': 'Party {} has been created'.format(data['name'])
+        'message': 'Party {} has been created'.format(party.name)
       }
     except Exception as exception:
       print(exception)
@@ -41,7 +31,7 @@ class Party(Resource):
 
 
   def patch(self):
-    data = self.parser.parse_args()  
-    PartyModel.updateParty(data)
-
-  
+    partySchema = PartySchema(strict=True)
+    oldParty= PartyModel.find_by_name(equest.form["name"])
+    party = partySchema.load(request.form, instance = oldParty).data.update()
+    return partySchema.dump(party)
