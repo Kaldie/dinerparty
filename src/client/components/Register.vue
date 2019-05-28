@@ -1,16 +1,15 @@
 
 <template>
-<Profile header="Register" submitButtonText="Register"></Profile>
+<Profile header="Register" submitButtonText="Register" dispatchMethod='account/register' showPassword></Profile>
 </template>
 
 <script>
 import Profile from './Profile'
-Profile
+
 export default {
     components: {
         Profile
-    }
-    
+    }    
 }
 </script>
 

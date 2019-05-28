@@ -16,7 +16,7 @@
     "@fortawesome/free-solid-svg-icons": "^5.6.3",
     "@fortawesome/vue-fontawesome": "^0.1.4",
     "axios": "^0.18.0",
-    "bootstrap-vue": "^2.0.0-rc.13",
+    "bootstrap-vue": "^2.0.0-rc.21",
     "glyphicons": "^0.2.0",
     "jquery": "^3.3.1",
     "mapbox-gl": "^0.52.0",

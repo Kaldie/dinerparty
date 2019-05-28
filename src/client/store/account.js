@@ -5,16 +5,15 @@ const user = JSON.parse(localStorage.getItem('user'))
 
 const state = user 
   ? {status: {loggedIn : true}, user} 
-  : {status: {} , user: null}
+  : {status: {} , user: {}}
 
 const actions = {
-  login({commit}, {userName, password}) {
-    commit('loginRequest', { userName })
-
-    UserService.login(userName, password)
+  login({commit}, {username, password}) {
+    commit('loginRequest', { username })
+    return UserService.login(username, password)
       .then(
         result => {
-          commit('loginSucces', result)
+          commit('loginSucces', result.data)
           myRouter.push('/')
         },
         error => commit('loginFailure', error)
@@ -26,18 +25,26 @@ const actions = {
   },
   register({ commit }, user) {
     commit('registerRequest', user)
-    UserService.register(user)
+    return UserService.register(user)
       .then(
         result => {
-          commit('registerSucces', result)
+          commit('registerSucces', result.data)
           myRouter.push('/')
         },
         error => commit('registerFailure', error)
       )
   },
+  get({commit}) {
+    commit('getUserRequest', user)
+    return UserService.get()
+    .then(
+      result => commit('getUserSucces', result),
+      error => commit('getUserFailure', error)
+    )
+  },
   update({ commit }, user) {
     commit('updateRequest', user)
-    UserService.update(user)
+    return UserService.update(user)
     .then(
       result => commit('updateSucces', result),
       error => commit('updateFailure', error)
@@ -45,7 +52,7 @@ const actions = {
   },
   refresh( {commit} ) {
     commit('refresh')
-    UserService.refresh()
+    return UserService.refresh()
     .then(
       result => {
         commit('refreshSucces', result)
@@ -53,6 +60,14 @@ const actions = {
       error => {
         commit('refreshFailure', error)
       }
+    )
+  },
+  resetPassword({commit}, passwordObject) {
+    commit('resetPassword')
+    return UserService.resetPassword(passwordObject)
+    .then(
+      () => { commit("resetPasswordSucces")},
+      error => { commit("resetPasswordFailure", error)},
     )
   }
 }
@@ -74,7 +89,7 @@ const mutations = {
   },
   logout(state) {
     state.status = {loggedIn: false}
-    state.user = null
+    state.user = {}
     localStorage.removeItem('user')
   },
   registerRequest(state) {
@@ -92,13 +107,34 @@ const mutations = {
   updateRequest(state) {
     state.status = {loggingIn: true}
   },
-  updateSuccess(state, user) {
+  updateSucces(state, user) {
     state.status = {loggedIn:true}
-    state.user = user
+    state.user = Object.assign(state.user, user.data)
   },
   updateFailure(state) {
     state.status = {}
     localStorage.removeItem('user')
+  },
+  getUserRequest(state) {
+    state.status = {
+      loggedIn:true, 
+      requestingInfo:true
+    }
+  },
+  getUserSucces(state, result) {
+     state.user = Object.assign(state.user, result.data)
+     state.status = {
+       loggedIn: true,
+       requestInfoSucces : true
+     }
+  },
+  getUserFailure(state, error){
+    state.status = {
+      requestInfoSucces : false,
+      loggedIn: false,
+      error
+    }
+    state.user = Object.assign(state.user, {username:""})
   },
   refresh(state) {
     state.status = {logginIn: true}
@@ -108,8 +144,14 @@ const mutations = {
     state.user.token = token
     localStorage.setItem('user', state.user)
   },
-  refreshFailure(state) {
-    state.status = {}
+  resetPassword(state) {
+    state.status = {loggedIn:true, resetingPassword: true}
+  },
+  resetPasswordSucces(state) {
+    state.status = {loggedIn:true, resetPassword: true}
+  },
+  resetPasswordFailure(state) {
+    state.status = {loggedIn:true, resetPassword: false}
   }
 }
 

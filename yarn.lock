@@ -744,10 +744,10 @@
   resolved "https://registry.yarnpkg.com/@nodelib/fs.stat/-/fs.stat-1.1.3.tgz#2b5a3ab3f918cca48a8c754c08168e3f03eba61b"
   integrity sha512-shAmDyaQC4H92APFoIaVDHCx5bStIocgvbwQyxPRrbUY20V1EYTbSDchWbuwlMG3V17cprZhA6+78JfB+3DTPw==
 
-"@nuxt/opencollective@^0.2.1":
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/@nuxt/opencollective/-/opencollective-0.2.1.tgz#8290f1220072637e575c3935733719a78ad2d056"
-  integrity sha512-NP2VSUKRFGutbhWeKgIU0MnY4fmpH8UWxxwTJNPurCQ5BeWhOxp+Gp5ltO39P/Et/J2GYGb3+ALNqZJ+5cGBBw==
+"@nuxt/opencollective@^0.2.2":
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/@nuxt/opencollective/-/opencollective-0.2.2.tgz#17adc7d380457379cd14cbb64a435ea196cc4a6e"
+  integrity sha512-ie50SpS47L+0gLsW4yP23zI/PtjsDRglyozX2G09jeiUazC1AJlGPZo0JUs9iuCDUoIgsDEf66y7/bSfig0BpA==
   dependencies:
     chalk "^2.4.1"
     consola "^2.3.0"
@@ -1782,14 +1782,16 @@ boolbase@^1.0.0, boolbase@~1.0.0:
   resolved "https://registry.yarnpkg.com/boolbase/-/boolbase-1.0.0.tgz#68dff5fbe60c51eb37725ea9e3ed310dcc1e776e"
   integrity sha1-aN/1++YMUes3cl6p4+0xDcwed24=
 
-bootstrap-vue@^2.0.0-rc.13:
-  version "2.0.0-rc.13"
-  resolved "https://registry.yarnpkg.com/bootstrap-vue/-/bootstrap-vue-2.0.0-rc.13.tgz#b1ae0047e78d759039f3d1343bc34f7d8cdeab8a"
-  integrity sha512-XKCHeb3vzdbw3tD7jMOBOA0YuK+1PZo2s5+Vl0uglZKKPIN0V9DljnUv+10xJve6yr88WX0sFWInYObRGFiC/Q==
+bootstrap-vue@^2.0.0-rc.21:
+  version "2.0.0-rc.21"
+  resolved "https://registry.yarnpkg.com/bootstrap-vue/-/bootstrap-vue-2.0.0-rc.21.tgz#447c3859b39390355e4b875c91d288036d7d5dd1"
+  integrity sha512-cGMKpk60xik+VhgQ8hUiRVaysOBv+4QhBLcegzsl31LNyFmIJPaAJyqrO/Nz3m8AkCEMkTECRNk2ZLm1RQE9dQ==
   dependencies:
-    "@nuxt/opencollective" "^0.2.1"
+    "@nuxt/opencollective" "^0.2.2"
     bootstrap "^4.3.1"
-    popper.js "^1.14.7"
+    core-js ">=2.6.5 <3.0.0"
+    popper.js "^1.15.0"
+    portal-vue "^2.1.4"
     vue-functional-data-merge "^2.0.7"
 
 bootstrap@^4.3.1:
@@ -2584,6 +2586,11 @@ copy-webpack-plugin@^4.6.0:
     minimatch "^3.0.4"
     p-limit "^1.0.0"
     serialize-javascript "^1.4.0"
+
+"core-js@>=2.6.5 <3.0.0":
+  version "2.6.9"
+  resolved "https://registry.yarnpkg.com/core-js/-/core-js-2.6.9.tgz#6b4b214620c834152e179323727fc19741b084f2"
+  integrity sha512-HOpZf6eXmnl7la+cUdMnLvUxKNqLUzJvgIziQ0DiF3JwSImNphIqdGqzj6hIKyX04MmV0poclQ7+wjWvxQyR2A==
 
 core-js@^1.0.0:
   version "1.2.7"
@@ -6804,10 +6811,15 @@ pluralize@^7.0.0:
   resolved "https://registry.yarnpkg.com/pluralize/-/pluralize-7.0.0.tgz#298b89df8b93b0221dbf421ad2b1b1ea23fc6777"
   integrity sha512-ARhBOdzS3e41FbkW/XWrTEtukqqLoK5+Z/4UeDaLuSW+39JPeFgs4gCGqsrJHVZX0fUrx//4OF0K1CUGwlIFow==
 
-popper.js@^1.14.7:
-  version "1.14.7"
-  resolved "https://registry.yarnpkg.com/popper.js/-/popper.js-1.14.7.tgz#e31ec06cfac6a97a53280c3e55e4e0c860e7738e"
-  integrity sha512-4q1hNvoUre/8srWsH7hnoSJ5xVmIL4qgz+s4qf2TnJIMyZFUFMGH+9vE7mXynAlHSZ/NdTmmow86muD0myUkVQ==
+popper.js@^1.15.0:
+  version "1.15.0"
+  resolved "https://registry.yarnpkg.com/popper.js/-/popper.js-1.15.0.tgz#5560b99bbad7647e9faa475c6b8056621f5a4ff2"
+  integrity sha512-w010cY1oCUmI+9KwwlWki+r5jxKfTFDVoadl7MSrIujHU5MJ5OR6HTDj6Xo8aoR/QsA56x8jKjA59qGH4ELtrA==
+
+portal-vue@^2.1.4:
+  version "2.1.4"
+  resolved "https://registry.yarnpkg.com/portal-vue/-/portal-vue-2.1.4.tgz#1fc679d77e294dc8d026f1eb84aa467de11b392e"
+  integrity sha512-Mr2h+RvoOOGHS7N0E3QPP+UQMt1OhSjQ7eMSGTXqkLiO0AjGEDw2x4kzmHATsZfDqQumiaYSDRzlUP2By3lvsA==
 
 portfinder@^1.0.19, portfinder@^1.0.9:
   version "1.0.20"

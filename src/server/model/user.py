@@ -19,8 +19,11 @@ class UserModel(db.Model):
 
   @staticmethod
   def generate_hash(password):
-    if password.startswith("$pbkdf2-sha256"):
+    print("password", password)
+    if password.startswith("$pbkdf2-sha256") or password is "":
+      print("return hash without hashing")
       return password
+    print("hashing the bitch")
     return pbkdf2_sha256.hash(password)
 
   @staticmethod
@@ -31,6 +34,7 @@ class UserModel(db.Model):
     self.creationDate = datetime.datetime.now()
     db.session.add(self)
     db.session.commit()
+    return self
 
   def update(self):
     try:
@@ -59,6 +63,16 @@ class UserModel(db.Model):
       num_rows_deleted = UserModel.query.delete()
       db.session.commit()
       return {'message': '{} row(s) deleted'.format(num_rows_deleted)}
-    except:
+    except Exception as error:
+      print(error)
       return {'message': 'something gone wrong!'}, 500
 
+  @staticmethod
+  def remove(user):
+    try:
+      db.session.delete(user)
+      db.session.commit()
+      return {"Message": "User {} has been removed".format(user.username)}
+    except Exception as error:
+      print(error)
+      return {'message': 'something gone wrong!'}, 500

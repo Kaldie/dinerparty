@@ -2,14 +2,25 @@
     <div class="container">
         <h2>Login</h2>
         <form @submit.prevent="handleSubmit">
-            <div class="form-group">
-                <input type="text" v-model="user.userName" placeholder="user name" name="user name" class="form-control" :class="{ 'is-invalid': submitted && errors.has('userName')  }" />
-                <div v-show="submitted && !user.userName" class="invalid-feedback">Username is required</div>
 
-                <input type="password" placeholder="password" v-model="user.password" v-validate="{ required: true }" name="password" class="form-control" :class="{ 'is-invalid': submitted && !user.password }" />
-                <div v-show="submitted && errors.has('password')" class="invalid-feedback">Password is required</div>
+            <div class="form-group row">
+                <label for=user_name class="col-sm-2 col-form-label" >User Name</label>
+                <div class="col-sm-10">
+                    <input id=user_name v-model="user.username" type="text" v-validate="{ required: true }" name="username" class="form-control" placeholder="required"/>
+                    <div v-show="submitted && !user.username" class="invalid-feedback">Username is required</div>
+                </div>
             </div>
-            <router-link to="/" class="btn btn-danger float-left">Cancel</router-link>  
+
+            <div class="form-group row">
+                <label for=password class="col-sm-2 col-form-label" >Password</label>
+                <div class="col-sm-10">
+                    <input id=password type="password" v-model="user.password" v-validate="{ required: true }" name="password" class="form-control" placeholder="required"/>
+                    <div v-show="submitted && !user.password" class="invalid-feedback">Password is required</div>
+                </div>
+            </div>
+
+            <router-link to="/" class="btn btn-danger float-left">Cancel</router-link>
+
             <div class="form-group float-right">   
                 <router-link to="/register" class="btn btn-link">Register</router-link>
                 <button class="btn btn-primary" v-if='isLoggedIn() === false'>Login
@@ -37,7 +48,7 @@ export default {
     data() {
         return {
             user :  {
-                userName : '',
+                username : '',
                 password : ''
             },
             submitted : false
@@ -52,7 +63,10 @@ export default {
             this.submitted = true
             this.$validator.validate().then(valid => {
                 if (valid) {
-                    this.login(this.user, this.password)
+                    this.login({
+                        username: this.user.username, 
+                        password: this.user.password
+                        })
                 }
             })
         },

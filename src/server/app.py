@@ -37,7 +37,6 @@ Flask.Debug=True
 
 @app.before_first_request
 def create_tables():
-  print("create_all here!!")
   db.create_all()
 
 @jwt.token_in_blacklist_loader
@@ -54,8 +53,11 @@ api.add_resource(users.UserLogin, '/login')
 api.add_resource(users.UserLogoutAccess, '/logout/access')
 api.add_resource(users.UserLogoutRefresh, '/logout/refresh')
 api.add_resource(users.TokenRefresh, '/token/refresh')
+api.add_resource(users.PasswordModification, '/user/password')
+
 api.add_resource(users.AllUsers, '/users')
 api.add_resource(users.User,"/user")
+
 
 api.add_resource(parties.Party,'/party')
 # api.add_resource(party_participation.PartyParticipation,'/party_participation')

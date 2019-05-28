@@ -2,16 +2,17 @@ import { AuthHeader, CrossOriginHeader, RefreshHeader } from '@/client/utilities
 import axios from 'axios'
 import Settings from '@/client/settings.js'
 
-const login = (userName, password) => {  
+axios.defaults.baseURL = `http://${Settings.server}:${Settings.port}/`
+
+const login = (username, password) => {  
   const config = {
     headers:  CrossOriginHeader,
-    }
-  const data = {
-    username:userName,
-    password}
+  }
 
-  return axios.post(`http://${Settings.server}:${Settings.port}/login`, data ,config)
-    .then(result => result.data)
+  const formData = new FormData();
+  formData.append('username', username);
+  formData.append('password', password);
+  return axios.post('login', formData, config )
 }
 
 const logout = () => {  
@@ -24,18 +25,23 @@ const logout = () => {
     headers: Object.assign(AuthHeader(), CrossOriginHeader),
   }
  
-  return axios.post(`http://${Settings.server}:${Settings.port}/logout/refresh`,{}, refreshConfig)
+  return axios.post(`logout/refresh`,{}, refreshConfig)
   .then(() => {
-    return axios.post(`http://${Settings.server}:${Settings.port}/logout/access`,{}, config)
+    return axios.post(`logout/access`,{}, config)
     })
 }
 
 const register = (user) => {
-  let config ={
-    headers: CrossOriginHeader,
-    data: user
+  let config = {
+    headers: CrossOriginHeader
   }
-  return axios.post(`http://${Settings.server}:${Settings.port}/registration`, user, config)
+  const formData = new FormData();
+  formData.append("username", user.username)
+  formData.append("password", user.password)
+  formData.append("email", user.email)
+  formData.append("address", user.address)
+  formData.append("city", user.city)
+  return axios.post(`registration`, formData, config)
   
 }
 
@@ -45,7 +51,7 @@ const refreshToken = () => {
     headers: Object.assign(RefreshHeader(), CrossOriginHeader),
     }
 
-  return axios.post(`http://${Settings.server}:${Settings.port}/token/refresh`, config)
+  return axios.post(`token/refresh`, config)
 }
 
 const getALl = () => {
@@ -54,11 +60,38 @@ const getALl = () => {
     headers: Object.assign(AuthHeader(), CrossOriginHeader),
   }
 
-  return axios.get(`http://${Settings.server}:${Settings.port}/users`, config)
+  return axios.get(`users`, config)
 }
 
-const update = () => {
-  
+const update = (user) => {
+  let config = {
+    headers: Object.assign(AuthHeader(), CrossOriginHeader),
+  }
+  const formData = new FormData();
+  formData.append("username", user.username)
+  formData.append("email", user.email)
+  formData.append("address", user.address)
+  formData.append("city", user.city)
+
+  return axios.patch(`user`, formData,config)
+}
+
+const get = () => {
+  let config = {
+    headers: Object.assign(AuthHeader(), CrossOriginHeader),
+  }
+  return axios.get(`user`,config)
+}
+
+const resetPassword = (passwordObject) => {
+  let config = {
+    headers: Object.assign(AuthHeader(), CrossOriginHeader),
+  }
+    const formData = new FormData();
+    formData.append("previousPassword", passwordObject.previousPassword)
+    formData.append("newPassword", passwordObject.newPassword)
+
+    return axios.post(`user/password`, formData, config)
 }
 
 
@@ -66,7 +99,10 @@ const update = () => {
 export const UserService = {
   login,
   logout,
+  update,
+  get,
   register,
   getALl,
-  refreshToken
+  refreshToken,
+  resetPassword
 }

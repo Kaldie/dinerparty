@@ -28,7 +28,7 @@
           </template>
           <b-dropdown-item v-show="notLogged()" to="/login">Sign in</b-dropdown-item>
           <b-dropdown-item v-show="status.loggedIn" to="/profile">Profile</b-dropdown-item>
-          <b-dropdown-item v-show="status.loggedIn" v-on:click="logout">Sign out</b-dropdown-item>
+          <b-dropdown-item v-show="status.loggedIn" v-on:click="logout" to="/">Sign out</b-dropdown-item>
         </b-nav-item-dropdown>
       </b-navbar-nav>
     </b-collapse>
