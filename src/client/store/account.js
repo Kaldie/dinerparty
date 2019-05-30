@@ -1,3 +1,4 @@
+
 import { UserService } from '@/client/service/users'
 import myRouter from '@/client/router'
 
@@ -6,6 +7,60 @@ const user = JSON.parse(localStorage.getItem('user'))
 const state = user 
   ? {status: {loggedIn : true}, user} 
   : {status: {} , user: {}}
+
+// call this function when a valid token is required
+// the first param should be the function
+// followed by its arguments
+// the after the arguments, give a callback on succes and failure
+const retryAfterTokenRefresh = (...args) => {
+  const action = args[0]
+  let currentArgumentNumber = 1
+  const parameters = []
+  while (typeof args[currentArgumentNumber] !== "function") {
+    parameters.push(args[currentArgumentNumber])
+    ++currentArgumentNumber
+  }
+
+  // eslint-disable-next-line no-unused-vars
+  let succes = (...args) => {}
+  if (args[currentArgumentNumber]) {
+    succes = args[currentArgumentNumber]
+    ++currentArgumentNumber
+  }
+
+  // eslint-disable-next-line no-unused-vars
+  let failure = (...args) => {}
+  if (args[currentArgumentNumber]) {
+    failure = args[currentArgumentNumber]
+    ++currentArgumentNumber
+  }
+
+
+  return action(...parameters)
+  .then(
+    result => succes(result),
+    error => {
+      if (error.response.data && error.response.data.msg) {
+        if ("Token has expired" === error.response.data.msg) {
+          UserService.refreshToken()
+          .then(
+            result => {
+              mutations.refreshSucces(state, result.data.access_token)
+              action(...parameters).then(
+                result => succes(result),
+                error => failure(error)
+              )
+            }
+          )
+        } else {
+          failure(error)
+        }
+      } else {
+        failure(error)
+      }
+    }
+  )
+}
 
 const actions = {
   login({commit}, {username, password}) {
@@ -16,7 +71,7 @@ const actions = {
           commit('loginSucces', result.data)
           myRouter.push('/')
         },
-        error => commit('loginFailure', error)
+        error => {commit('loginFailure', error)}
       )
   },
   logout({ commit }) {
@@ -35,41 +90,42 @@ const actions = {
       )
   },
   get({commit}) {
-    commit('getUserRequest', user)
-    return UserService.get()
-    .then(
-      result => commit('getUserSucces', result),
-      error => commit('getUserFailure', error)
+    retryAfterTokenRefresh(
+      () => {commit('getUserRequest'); return UserService.get() },
+      (result) => commit('getUserSucces', result),
+      (error) => commit('getUserFailure', error)
     )
   },
   update({ commit }, user) {
-    commit('updateRequest', user)
-    return UserService.update(user)
-    .then(
+    retryAfterTokenRefresh(
+      (user) => {
+        commit('updateRequest', user)
+        return UserService.update(user) 
+      },
+      user,
       result => commit('updateSucces', result),
       error => commit('updateFailure', error)
     )
   },
-  refresh( {commit} ) {
+  refresh({ commit }) {
     commit('refresh')
-    return UserService.refresh()
+    return UserService.refreshToken()
     .then(
-      result => {
-        commit('refreshSucces', result)
-      },
-      error => {
-        commit('refreshFailure', error)
-      }
+      result => commit('refreshSucces', result),
+      error => commit('refreshFailure', error)
     )
   },
   resetPassword({commit}, passwordObject) {
-    commit('resetPassword')
-    return UserService.resetPassword(passwordObject)
-    .then(
-      () => { commit("resetPasswordSucces")},
-      error => { commit("resetPasswordFailure", error)},
+    retryAfterTokenRefresh(
+      (passwordObject) => {
+          commit('resetPassword')
+          return UserService.resetPassword(passwordObject)
+      },
+      passwordObject,
+      () => commit("resetPasswordSucces"),
+      error => commit("resetPasswordFailure", error)
     )
-  }
+  },
 }
 
 const mutations = {
@@ -139,9 +195,9 @@ const mutations = {
   refresh(state) {
     state.status = {logginIn: true}
   },
-  refreshSucces(state, token) {
+  refreshSucces(state, access_token) {
     state.status = {loggedIn: true}
-    state.user.token = token
+    state.user.access_token = access_token
     localStorage.setItem('user', state.user)
   },
   resetPassword(state) {
