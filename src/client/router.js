@@ -26,8 +26,6 @@ router.beforeEach((to, from, next) => {
   const publicPages = ['/find', '/', '/host', '/login', '/register'];
   const authRequired = !publicPages.includes(to.path)
 
-  console.warn("isLogged()", isLogged())
-
   if ( authRequired && !isLogged() ) {
     return next('/login');
   }
