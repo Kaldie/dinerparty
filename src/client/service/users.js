@@ -51,7 +51,7 @@ const refreshToken = () => {
     headers: Object.assign(RefreshHeader(), CrossOriginHeader),
     }
 
-  return axios.post(`token/refresh`, config)
+  return axios.post(`token/refresh`, {}, config)
 }
 
 const getALl = () => {
