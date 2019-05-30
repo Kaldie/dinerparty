@@ -24,9 +24,10 @@
         <b-nav-item-dropdown right>
           <!-- Using button-content slot -->
           <template slot="button-content">
-            <em>User</em>
+            <em v-show="!status.loggedIn">User </em>
+            <em v-show="status.loggedIn"> {{this.user.username}} </em>
           </template>
-          <b-dropdown-item v-show="notLogged()" to="/login">Sign in</b-dropdown-item>
+          <b-dropdown-item v-show="!status.loggedIn" to="/login">Sign in</b-dropdown-item>
           <b-dropdown-item v-show="status.loggedIn" to="/profile">Profile</b-dropdown-item>
           <b-dropdown-item v-show="status.loggedIn" v-on:click="logout" to="/">Sign out</b-dropdown-item>
         </b-nav-item-dropdown>
@@ -53,12 +54,9 @@ import {mapState, mapActions} from 'vuex'
 export default {
   methods: {
     ...mapActions('account', ['logout']),
-    notLogged() {
-      return this.status.loggedIn ? !this.status.loggedIn: true 
-    }
   },
   computed: {
-    ...mapState('account', ['status'])
+    ...mapState('account', ['status','user'])
   },
 } 
 </script>
