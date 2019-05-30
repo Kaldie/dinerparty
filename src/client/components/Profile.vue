@@ -8,6 +8,7 @@
              <h1 id=header >{{header}}</h1>
             </div>
         </div>
+        
         <div class="col-sm-10"> 
             <form @submit.prevent="handleSubmit">
                 <div class="form-group row">
