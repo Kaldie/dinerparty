@@ -28,31 +28,35 @@
 
             <div class="col-sm">
                 <img id=right-food-image class=column-food-image src="../assets/food_images/food2.png"> 
+                <form @submit.prevent="handleSubmit">
+                    <div class="content" id=dinner-information>
+                        <h4> Diner Information </h4>
+                        <input v-model="newParty.name" id=diner_name type="text" class="form-control" placeholder="Diner name"/>
+                        <input v-model="newParty.seats" id=diner_number_of_seats type="number" class="form-control" placeholder=2 />
 
-                <div class="content" id=dinner-information>
-                    <h4 id=user-information-card-title> Diner Information </h4>
-                    <input id=diner_name type="text" class="form-control" placeholder="Diner name"/>
-                    <input id=diner_number_of_seats type="number" class="form-control" placeholder=2 />
+                        <div class="input-group sm">
+                            <input id=datetimepicker type="text" class="form-control" placeholder="Date"/>
+                            <b-input-group-append>
+                                <button class="input-group-text" id="basic-addon2" v-on:click="showDateTime">
+                                    <font-awesome-icon icon="calendar"/>
+                                </button>
+                            </b-input-group-append>
+                        </div>   
 
-                    <div class="input-group sm">
-                        <input id=datetimepicker type="text" class="form-control" placeholder="Date"/>
-                        <b-input-group-append>
-                            <button class="input-group-text" id="basic-addon2" v-on:click="showDateTime">
-                                <font-awesome-icon icon="calendar"/>
-                            </button>
-                        </b-input-group-append>
-                    </div>   
+                        <textarea v-model="newParty.description" class="form-control" id="diner_description-text-area" rows="1" placeholder="Description of the diner"/>
 
-                    <textarea class="form-control" id="diner_description-text-area" rows="1" placeholder="Description of the diner"/>
+                        <div class="input-group form-check" id=teach-check-input>
+                            <div id=inner-checkbox-group>
+                                <input v-model="newParty.teaching" type="checkbox" class=form-check-input id="has-guidance" aria-label="Checkbox">
+                                <label class="form-check-label" for="has-guidance">Will teach</label>
+                            </div>
+                        </div>
 
+                        <button class="btn btn-danger float-left">Cancel</button>
+                        <button type="submit" class="btn btn-primary float-right">Submit</button>
 
-
-
-                    <div class="pull-left">
-                        <input type="checkbox" class=form-check-input id="has-guidance" aria-label="Checkbox">
-                        <label class="form-check-label" for="has-guidance">Will teach</label>
                     </div>
-                </div>
+                </form>
             </div>
 
         </div>
@@ -61,14 +65,36 @@
 </template>
 
 <script>
+
 import '@/../imported-lib/lala/jquery.datetimepicker.full.js'
 import '@/../imported-lib/lala/jquery.datetimepicker.min.css'
 import icons from 'glyphicons'
+
+import {mapState, mapActions} from 'vuex'
+
 export default {
     name:"Host",
+    data() {
+        return {
+            newParty :  {
+                name : '',
+                description : '',
+                seats : 2,
+                teaching : false,
+                cousin : 'default',
+                image : "none",
+                date: ""
+            },
+        }
+    },
     methods: {
+        ...mapActions('party',['registerParty']),
         showDateTime: function() {
             $('#datetimepicker').datetimepicker('show');
+        },
+        handleSubmit: function() {
+            this.newParty.date = $('#datetimepicker').datetimepicker('getValue');;
+            this.registerParty(this.newParty)
         }
     },
     mounted: function() {
@@ -82,6 +108,22 @@ export default {
 
 
 <style scoped>
+
+#teach-check-input {
+    background-color:white;
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    height: calc(1.5em + 0.75rem + 2px);
+    margin-top: 0.25em;
+    margin-bottom: 0.25em;
+    padding-top: 0.375rem;
+    padding-bottom: 0.375rem; 
+}
+
+#inner-checkbox-group {
+    margin-left: 0.6em;
+}
+
 
 .content {
     position: absolute; /* Position the background text */
@@ -97,11 +139,6 @@ export default {
 .column-food-image {
   width: 100%;
   height: 100%;
-}
-
-.form-row {
-  margin-top:0.5em;
-  margin-bottom:0.25em;
 }
 
 input {

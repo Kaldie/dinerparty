@@ -10,7 +10,8 @@
                 :interval="10000"
                 indicators
                 controls>
-              <Party v-for="party in parties" :key="party.id" v-bind:party="party" />
+              <Party v-for="party in foundParties" :key="party.id" v-bind:party="party" />
+
             </b-carousel>
         </div>
       </div>
@@ -20,9 +21,9 @@
 
 <script>
 import getCurrentPositionPromise from '@/client/utilities/GeoUtilties.js'
-import axios from 'axios'
 import Party from './Party'
-import Settings from '@/client/settings.js'
+import {mapState, mapActions} from 'vuex'
+import { setTimeout } from 'timers';
 
 export default {
   name: 'Find',
@@ -31,44 +32,39 @@ export default {
     refresh: Boolean(false),
     partyFilter: Object,
   },
-  data: function() {
-    return {
-      parties: []
-    }
+  computed: {
+    ...mapState("party",["status", "foundParties"])
   },
   components: {
     Party
   },
   mounted: function() {
-    this.suitableParties()
+    getCurrentPositionPromise().then( (position) => {
+            const currentLocation = {
+              lat : position.coords.latitude,
+              long : position.coords.longitude
+            }
+            const range = 10000
+            this.findParties({currentLocation, range})
+            console.warn("fo und ", this.foundParties)
+        })
   },
   methods: {
+    ...mapActions('party',['findParties']),
     suitableParties: function() {
       if ( !this.refresh && this.position && this.position.coords) {
-
+        1+1
       } else {
         getCurrentPositionPromise().then( (position) => {
-          let config = {
-            headers: {
-              "Access-Control-Allow-Origin": "127.0.0.1:5000",
-            },
-            params: {
-              lat : position.coords.latitude,
-              lon : position.coords.longitude,
-          }}
-          axios.get(`http://${Settings.server}:${Settings.port}/parties`, config)
-          .catch((error) => {
-            console.warn(error)
-          }).then((response) => {
-            this.parties = response.data
-            return response.data
-          })
-        })
+          const currentLocation = {
+            lat : position.coords.latitude,
+            long : position.coords.longitude
+          }
+          const range = 10000 
+          this.findParties({currentLocation, range})
+        }) 
       }
     }
-  },
-  computed: {
-
   }
 }
 </script>

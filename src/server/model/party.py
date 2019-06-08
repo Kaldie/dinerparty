@@ -53,12 +53,23 @@ class PartyModel(db.Model):
   def find_by_id(cls, id):
     return cls.query.filter_by(id=id).one()
 
+  @classmethod
+  def find_by_range(cls, rangeDict):
+    rangeDict["latitude"]["min"]
+
+    print(rangeDict)
+
+    return cls.query.filter(
+      (cls.latitude >= rangeDict["latitude"]["min"]) & 
+      (cls.latitude <= rangeDict["latitude"]["max"]) &
+      (cls.longitude >= rangeDict["longitude"]["min"]) & 
+      (cls.longitude <= rangeDict["longitude"]["max"])
+    )
+
   @staticmethod
   def remove(party):
     try:
-      print("here!!")
       db.session.delete(party)
-      print("here2!!")
       db.session.commit()
       return {"Message": "Party {} has been removed".format(party.name)}
     except Exception as error:

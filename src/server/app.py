@@ -27,7 +27,7 @@ jwt = JWTManager(app)
 
 # import model
 
-from resources import users, parties, party_participation
+from resources import users, party, parties, party_participation
 #, 
 from model.revoked_token import RevokedTokenModel
 
@@ -58,8 +58,8 @@ api.add_resource(users.PasswordModification, '/user/password')
 api.add_resource(users.AllUsers, '/users')
 api.add_resource(users.User,"/user")
 
-
-api.add_resource(parties.Party,'/party')
+api.add_resource(party.Party,'/party')
+api.add_resource(parties.Parties,'/parties')
 # api.add_resource(party_participation.PartyParticipation,'/party_participation')
 
 

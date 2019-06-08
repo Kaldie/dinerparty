@@ -1,51 +1,71 @@
 from flask import request
+from math import radians, sin, cos, acos
+
 from flask_restful import Resource
 from flask_jwt_extended import jwt_required, get_jwt_identity
+
 from server.schema.party_schema import PartySchema
 from server.model.user import UserModel
 from server.model.party import PartyModel, PartyException
 
 
-class Party(Resource):
-  @jwt_required
-  def get(self):
-    party = PartySchema().load(request.form).data
-    party= PartyModel.find_by_name(party.name)
-    return {
-      "message": "Found party {}".format(party.name),
-      "party":PartySchema().dump(party)
+# gotten from https://www.w3resource.com/python-exercises/math/python-math-exercise-27.php
+def distanceBetween(partyLocation, currentLocation) :
+    assert(partyLocation and currentLocation)
+    assert((partyLocation.get("long", None) is not None) and (partyLocation.get("lat", None) is not None))
+    assert((currentLocation.get("long", None) is not None) and (currentLocation.get("lat", None) is not None))
+        
+    r1 = radians(partyLocation.get("lat")) 
+    r2 = radians(currentLocation.get("lat"))
+    dl = radians(currentLocation.get("long") - partyLocation.get("long"))
+    R = 637.1; # gives d in km
+    return acos( sin(r1) * sin(r2) + cos(r1) * cos(r2) * cos(dl) ) * R
+
+
+def approximateValidRange(location, distance):
+    rangeApproximation = {
+        "latitude" : {"max" : None, "min": None},
+        "longitude" : {"max" : None, "min": None}
     }
 
-  @jwt_required
-  def post(self):
-    party = PartySchema(strict=True).load(request.form).data
-    party.host_id = get_jwt_identity()["id"]
-    try:
-      party.addParty()
-      return {"message": "Party created", "party":PartySchema().dump(party)}
-    except PartyException as partyException:
-      if "Party already exists" in str(partyException):
-        return {"message": "Party already exists"}
-      return {"message":"Unknown error!"}
+    # https://www.thoughtco.com/degree-of-latitude-and-longitude-distance-4070616
+    distanceOfOneDegreeOfLatitude = 111
+    rangeApproximation["latitude"]["min"] = location["lat"] - (distance / distanceOfOneDegreeOfLatitude)
+    rangeApproximation["latitude"]["max"] = location["lat"] + (distance / distanceOfOneDegreeOfLatitude)
 
+    # Determine the latitude which given 1 degree difference is the least distance
+    lat = radians(min(abs(rangeApproximation["latitude"]["min"]), abs(rangeApproximation["latitude"]["max"])))
+    a = 1
+    distanceOfOneDegreeOfLong = distanceOfOneDegreeOfLatitude * cos(lat)
+    rangeApproximation["longitude"]["min"] = location["long"] - (distance / distanceOfOneDegreeOfLong)
+    rangeApproximation["longitude"]["max"] = location["long"] + (distance / distanceOfOneDegreeOfLong)
+    return rangeApproximation
 
-  @jwt_required
-  def patch(self):
-    partySchema = PartySchema(strict=True)
-    oldParty= PartyModel.find_by_name(request.form["name"])
-    party = partySchema.load(request.form, instance = oldParty).data.update()
-    return partySchema.dump(party)
-
-  @jwt_required
-  def delete(self):
-    party = PartySchema().load(request.form).data
-    print(party)
-    if hasattr(party,"id") and party.id is not None:
-      dbParty = PartyModel.find_by_id(party.id)
-      return PartyModel.remove(dbParty)
-    if hasattr(party,"name") and party.name is not None:
-      dbParty = PartyModel.find_by_name(party.name)
-      return PartyModel.remove(dbParty)
-    raise PartyException("Could not find id or name")
       
-    
+class Parties(Resource):
+    @jwt_required
+    def get(self):
+        values = request.values
+        print(request.values)
+        assert(values.get("lat", None))
+        assert(values.get("long", None))
+
+        partyRange = float(values.get("range", 10))
+        print("partyRange", partyRange)
+        
+        currentPosition = {
+            "lat" : float(values.get("lat")),
+            "long": float(values.get('long'))
+        }
+
+        validRange = approximateValidRange(currentPosition, partyRange)
+        parties = PartyModel.find_by_range(validRange)
+
+        validParties = []
+        for party in parties:
+            partyLocation = {"long": party.longitude, "lat": party.longitude}
+
+            if distanceBetween(partyLocation, currentPosition) <= partyRange:
+                validParties.append(party)
+
+        return PartySchema().dump(validParties, many = True)

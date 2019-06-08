@@ -46,6 +46,7 @@ input[id^=datetimepicker] {
     "party" : Object
   },
   mounted: function() {
+    console.warn("this.party", this.party)
     $(`#datetimepicker-${this.party.id}`).datetimepicker({
       value:this.party.date
     });

@@ -1,6 +1,7 @@
 import { AuthHeader, CrossOriginHeader, RefreshHeader } from '@/client/utilities'
 import axios from 'axios'
 import Settings from '@/client/settings.js'
+import objectToFormData from 'object-to-formdata'
 
 axios.defaults.baseURL = `http://${Settings.server}:${Settings.port}/`
 
@@ -35,14 +36,7 @@ const register = (user) => {
   let config = {
     headers: CrossOriginHeader
   }
-  const formData = new FormData();
-  formData.append("username", user.username)
-  formData.append("password", user.password)
-  formData.append("email", user.email)
-  formData.append("address", user.address)
-  formData.append("city", user.city)
-  return axios.post(`registration`, formData, config)
-  
+  return axios.post(`registration`, objectToFormData(user), config)
 }
 
 const refreshToken = () => {
@@ -67,13 +61,7 @@ const update = (user) => {
   let config = {
     headers: Object.assign(AuthHeader(), CrossOriginHeader),
   }
-  const formData = new FormData();
-  formData.append("username", user.username)
-  formData.append("email", user.email)
-  formData.append("address", user.address)
-  formData.append("city", user.city)
-
-  return axios.patch(`user`, formData,config)
+  return axios.patch(`user`, objectToFormData(user), config)
 }
 
 const get = () => {
@@ -87,11 +75,7 @@ const resetPassword = (passwordObject) => {
   let config = {
     headers: Object.assign(AuthHeader(), CrossOriginHeader),
   }
-    const formData = new FormData();
-    formData.append("previousPassword", passwordObject.previousPassword)
-    formData.append("newPassword", passwordObject.newPassword)
-
-    return axios.post(`user/password`, formData, config)
+  return axios.post(`user/password`, objectToFormData(passwordObject), config)
 }
 
 
