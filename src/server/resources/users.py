@@ -161,3 +161,8 @@ class User(Resource):
         updatedUser = userSchema.load(request.form, instance = oldUser).data.update()
         return userSchema.dump(updatedUser)
         
+class RequestUser(Resource):
+    @jwt_required
+    def get(self, id):
+        user = UserModel.find_by_id(id)
+        return UserSchema(exclude=['address', 'city', "postalCode" ]).dump(user)

@@ -57,6 +57,7 @@ api.add_resource(users.PasswordModification, '/user/password')
 
 api.add_resource(users.AllUsers, '/users')
 api.add_resource(users.User,"/user")
+api.add_resource(users.RequestUser,"/user/<string:id>")
 
 api.add_resource(party.Party,'/party')
 api.add_resource(parties.Parties,'/parties')
