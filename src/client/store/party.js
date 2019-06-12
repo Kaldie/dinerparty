@@ -56,7 +56,6 @@ const mutations = {
   },
   findPartiesSucces(state, result) {
     state.status = "foundParties" 
-    console.warn("result", result.data)
     state.foundParties = result.data
   },
   findPartiesFailure(state, error) {

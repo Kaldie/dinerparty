@@ -3,7 +3,12 @@ import { UserService } from '@/client/service/users'
 import myRouter from '@/client/router'
 import { retryAfterTokenRefresh } from './utilities'
 
-const user = JSON.parse(localStorage.getItem('user'))
+let user
+try {
+  user = JSON.parse(localStorage.getItem('user'))
+} catch {
+  localStorage.removeItem("user")
+}
 
 const state = user 
   ? {status: {loggedIn : true}, user} 

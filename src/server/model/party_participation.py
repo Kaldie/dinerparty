@@ -1,13 +1,22 @@
 from server.app import db
 import datetime
+from sqlalchemy.orm import relationship
+from user import UserModel
 
-class PartyParticipation(db.Model):
+class PartyParticipationModel(db.Model):
   __tablename__ = "party_participation"
 
   id = db.Column(db.Integer, primary_key = True)
+  is_coming = db.Column(db.Boolean, default=True, nullable = True)
+  is_accepted = db.Column(db.Boolean, default=True, nullable = True)
+  
+  # relations
   party_id = db.Column(db.Integer, db.ForeignKey('party.id') )
   user_id = db.Column(db.Integer, db.ForeignKey('user.id') )
-  is_coming = db.Column(db.Boolean, default=True, nullable = True)
+  
+  #back ref
+  user = relationship("UserModel", backref = db.backref( "participation" ))
+  party = relationship("PartyModel", backref = db.backref( "participation" ))
 
 
   @classmethod

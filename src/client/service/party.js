@@ -12,6 +12,13 @@ const registerParty = (party) => {
   return axios.post(`party`, objectToFormData(party), config)
 }
 
+const registerForParty = (party) => {
+  let config = {
+    headers: Object.assign(AuthHeader(), CrossOriginHeader),
+  }
+  return axios.post('')
+}
+
 const findParties = (currentLocation, range) => {
   let config = {
     headers: Object.assign(AuthHeader(), CrossOriginHeader),
@@ -26,5 +33,6 @@ const findParties = (currentLocation, range) => {
 
 export const PartyService = {
   registerParty,
+  registerForParty,
   findParties
 }

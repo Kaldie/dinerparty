@@ -22,7 +22,16 @@ const actions = {
       result => commit('deleteSuccess', result),
       error => commit('deleteFailure', error)
     )
-  }
+  },
+
+  // get({commit}, id) {
+  //   commit ("userGetRequest", id)
+
+  //   UserService.getUser(id).then(
+  //     result => commit('userGetSuccess', result),
+  //     error => commit('userGetFailure', error)
+  //   )
+  // }
 }
 
 const mutations = {

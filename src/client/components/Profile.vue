@@ -8,43 +8,13 @@
              <h1 id=header >{{header}}</h1>
             </div>
         </div>
+
+        
         
         <div class="col-sm-10"> 
             <form @submit.prevent="handleSubmit">
-                <div class="form-group row">
-                    <label for=user_name class="col-sm-2 col-form-label" >User Name</label>
-                    <div class="col-sm-10">
-                        <input id=user_name v-model="user.username" type="text" v-validate="{ required: true }" name="username" class="form-control" placeholder="required"/>
-                        <div v-show="submitted && !user.username" class="invalid-feedback">Username is required</div>
-                    </div>
-                </div>
-
-                <div class="form-group row" v-if="showPassword">
-                    <label for=password class="col-sm-2 col-form-label" >Password</label>
-                    <div class="col-sm-10">
-                        <input id=password type="password" v-model="user.password" v-validate="{ required: true }" name="password" class="form-control" placeholder="required"/>
-                        <div v-show="submitted && !user.password" class="invalid-feedback">Password is required</div>
-                    </div>
-                </div>
-
-                <div class="form-group row">
-                    <label for=user_name class="col-sm-2 col-form-label" >Email</label>
-                    <div class="col-sm-10">
-                        <input id=email type="text" v-model="user.email" v-validate="{ required: true }" name="email" class="form-control" placeholder="required"/>
-                        <div v-show="submitted && !user.email" class="invalid-feedback">Email is required</div>
-                    </div>
-                </div>
-
-                <div class="form-group row">
-                    <label for=user_name class="col-sm-2 col-form-label" >Location</label>
-                    <div class="col-sm-10">
-                        <div class="input-group">
-                            <input type="text" v-model="user.address" placeholder="Address" v-validate="{ required: false }" name="address" class="form-control control-pair-left" :class="{ 'is-invalid': submitted && errors.has('firstName')  }" />
-                            <input type="text" placeholder='City' v-model="user.city" name="City" class="form-control control-pair-right" :class="{ 'is-invalid': submitted && errors.has('middleName')  }" />
-                        </div>
-                    </div>
-                </div>
-
+                <User v-bind:showPassword="false" v-bind:showEmail="true" v-bind:showLocation="true"></User>
+                
                 <div class="container-fluid" id=button_container>
                     <div class="col-sm-2 float-left" id=cancel_button_container >
                         <router-link to="/" class="btn btn-danger form-group-button ">Cancel</router-link> 
@@ -64,6 +34,11 @@
 </template>
 
 <style>
+.container {
+    position: absolute;
+    top: 25%;
+}
+
 .container {
     position: absolute;
     top: 25%;
@@ -112,11 +87,13 @@
 
 import {mapState, mapActions} from 'vuex'
 import PasswordModal from './PasswordModal';
+import User from './User'
 
 export default {
     name:"Profile",
     components: { 
-        PasswordModal 
+        PasswordModal, 
+        User
         },
     props: {
         'header': {
@@ -130,10 +107,6 @@ export default {
         "dispatchMethod": {
             type: String,
             default: 'account/update'
-        },
-        "showPassword": {
-            type:Boolean,
-            default: false
         }
     },
     data() {

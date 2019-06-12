@@ -28,7 +28,6 @@ jwt = JWTManager(app)
 # import model
 
 from resources import users, party, parties, party_participation
-#, 
 from model.revoked_token import RevokedTokenModel
 
 Flask.env="debug"
@@ -61,7 +60,7 @@ api.add_resource(users.RequestUser,"/user/<string:id>")
 
 api.add_resource(party.Party,'/party')
 api.add_resource(parties.Parties,'/parties')
-# api.add_resource(party_participation.PartyParticipation,'/party_participation')
+api.add_resource(party_participation.PartyParticipationResource,'/party_participation')
 
 
 

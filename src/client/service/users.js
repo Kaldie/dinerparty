@@ -73,9 +73,16 @@ const get = () => {
 
 const resetPassword = (passwordObject) => {
   let config = {
-    headers: Object.assign(AuthHeader(), CrossOriginHeader),
+    headers: Object.assign(AuthHeader(), CrossOriginHeader)
   }
   return axios.post(`user/password`, objectToFormData(passwordObject), config)
+}
+
+const getUser = (id) => {
+  let config = {
+    headers: Object.assign(AuthHeader(), CrossOriginHeader)
+  }
+  return axios.post(`user/${id}`, config)
 }
 
 
@@ -87,6 +94,7 @@ export const UserService = {
   get,
   register,
   getALl,
+  getUser,
   refreshToken,
   resetPassword
 }

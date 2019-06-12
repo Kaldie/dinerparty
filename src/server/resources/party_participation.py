@@ -1,30 +1,39 @@
-from flask_restful import Resource, reqparse
+from flask import request
+from flask_restful import Resource
 from flask_jwt_extended import jwt_required
-from server.model.party_participation import PartyParticipation
+from server.model.party_participation import PartyParticipationModel
+from server.schema.party_participation import PartyParticipationSchema
 import json
 
-class PartyParticipation(Resource):
-  parser = reqparse.RequestParser()
-  parser.add_argument("party_id", help = "Required parameter, identifying the party", required = True)
-  parser.add_argument("user_id", help = "Required parameter, identifying the user", required = True)
-  parser.add_argument("going", help = "Shows if you are participating or not", required = False, default = True)
 
-  @jwt_required
-  def get(self):
-    coming = PartyParticipation.accepting_users(parser.get('party_id'))
-    declining = PartyParticipation.declining_users(parser.get('party_i'))
+class PartyParticipationResource(Resource):
 
-    return {
-      'message': 'Party participation is {numberOfAccepting} accepted, {numberOfDeclining} declined'.format(
-      numberOfDeclining= coming.count(),
-      numberOfAccepting= declining.count()),
-      "decliningParticipants": declining,
-      "acceptingParticipants": coming
-    }
+    @jwt_required
+    def get(self):
+        partyParticipation = \
+            PartyParticipationSchema(partial=True).load(request.data).data
 
+        coming = PartyParticipationModel.accepting_users(partyParticipation.id)
+        declining = \
+            PartyParticipationModel.declining_users(partyParticipation.id)
 
-  @jwt_required
-  def patch(self):
-    if not 'id' in parser:
-      raise ValueError("Need party id in request")
-  
+        return {
+            'message': 'Party participation is {numberOfAccepting} accepted,\
+                 {numberOfDeclining} declined'.format(
+              numberOfDeclining=coming.count(),
+              numberOfAccepting=declining.count()),
+            "decliningParticipants": declining,
+            "acceptingParticipants": coming
+        }
+
+    @jwt_required
+    def post(self):
+        partyParticipation = \
+            PartyParticipationSchema(partial=True).load(request.data).data
+        PartyParticipationModel.accepting_users(partyParticipation.id)
+
+    @jwt_required
+    def patch(self):
+        if 'id' not in parser:
+            raise ValueError("Need party id in request")
+    

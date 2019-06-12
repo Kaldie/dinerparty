@@ -1,7 +1,7 @@
 from flask import request
 from flask_restful import Resource
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from server.schema.party_schema import PartySchema
+from server.schema.party import PartySchema
 from server.model.user import UserModel
 from server.model.party import PartyModel, PartyException
 
@@ -23,9 +23,11 @@ class Party(Resource):
     try:
       party.addParty()
       return {"message": "Party created", "party":PartySchema().dump(party)}
+
     except PartyException as partyException:
       if "Party already exists" in str(partyException):
         return {"message": "Party already exists"}
+
       return {"message":"Unknown error!"}
 
 
@@ -39,13 +41,15 @@ class Party(Resource):
   @jwt_required
   def delete(self):
     party = PartySchema().load(request.form).data
-    print(party)
+
     if hasattr(party,"id") and party.id is not None:
       dbParty = PartyModel.find_by_id(party.id)
       return PartyModel.remove(dbParty)
+
     if hasattr(party,"name") and party.name is not None:
       dbParty = PartyModel.find_by_name(party.name)
       return PartyModel.remove(dbParty)
+
     raise PartyException("Could not find id or name")
 
 
