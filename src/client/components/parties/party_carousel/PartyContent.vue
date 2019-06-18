@@ -62,7 +62,6 @@
   },
   methods: {
     showDateTime: function() {
-        console.warn("here")
       $(`#datetimepicker-${this.party.id}`).datetimepicker('show');
     },
     requestInvite: (event) => {
