@@ -47,11 +47,6 @@
     text-align: right;
 }
 
-#header {
-    margin-left: 1.5em;
-    margin-bottom: 0.5em;
-    text-align: right;
-}
 
 #button_container {
     padding-left: 0%;

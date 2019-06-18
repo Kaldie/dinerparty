@@ -1,6 +1,6 @@
 
 <template>
-<Profile header="Register" submitButtonText="Register" dispatchMethod='account/register' showPassword></Profile>
+<Profile header="Register" submitButtonText="Register" dispatchMethod='account/register' showPassword='false'></Profile>
 </template>
 
 <script>

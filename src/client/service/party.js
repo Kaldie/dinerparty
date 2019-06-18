@@ -12,11 +12,59 @@ const registerParty = (party) => {
   return axios.post(`party`, objectToFormData(party), config)
 }
 
-const registerForParty = (party) => {
+const clientAccepts = (party) => {
+  clientInforms(party, true)
+}
+
+
+const clientRejects = (party) => {
+  clientInforms(party, false)
+}
+
+const partyInforms = (party, decision, side) => {
+
+  let partyKey = ""
+
+  const formData = {partyId: party.id}
+
+  if (side ==="client") {
+    partyKey = "clientAccepted"
+    
+  } else if (side === "host") {
+    partyKey = "hostAccepted"
+  } else {
+    throw Error("unkown side!")
+  }
+
+  formData[partyKey] = decision
+
   let config = {
     headers: Object.assign(AuthHeader(), CrossOriginHeader),
   }
-  return axios.post('')
+
+  const formData = objectToFormData(formData)
+
+  return axios.post('party_participation', formData, config)
+}
+
+const clientInforms = (party, decision) => {
+  return partyInforms(party, decision, "client")
+}
+
+const hostsInforms = (party, decision) => {
+  return partyInforms(party, decision, "client")
+}
+
+const hostsAccepts = (party) => {
+  hostsInforms(party,true)
+}
+
+const hostsRejects = (party) => {
+  hostsInforms(party,false)
+}
+
+const getHostedParties = () => {
+  return 1
 }
 
 const findParties = (currentLocation, range) => {
@@ -33,6 +81,10 @@ const findParties = (currentLocation, range) => {
 
 export const PartyService = {
   registerParty,
-  registerForParty,
-  findParties
+  clientAccepts,
+  clientRejects,
+  hostsAccepts,
+  hostsRejects,
+  findParties,
+  getHostedParties
 }

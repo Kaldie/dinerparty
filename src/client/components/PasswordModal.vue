@@ -7,12 +7,12 @@
 
     <form ref="form" @submit.stop.prevent="handleSubmit">
       <b-form-group label="Previous password" label-for="prev-password" invalid-feedback="Previous password is required">
-          <b-form-input type=password id="prev-password" v-model="previousPassword" required> </b-form-input>
+          <b-form-input type=password id="prev-password" v-model="previousPassword" required autocomplete="current-password"> </b-form-input>
       </b-form-group>
 
       <b-form-group label="New password" label-for="new-password" invalid-feedback="Previous password is required">
-          <b-form-input type=password id="new-password" v-model="newPassword" required> </b-form-input>
-      </b-form-group>
+          <b-form-input type=password id="new-password" v-model="newPassword" required autocomplete="new-password"> </b-form-input>
+      </b-form-group>      
     </form>
 
   </b-modal>

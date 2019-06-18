@@ -3,8 +3,8 @@ import datetime
 from server.app import db
 from sqlalchemy.orm import relationship
 from sqlalchemy import exc
-from user import UserModel
-from party_participation import PartyParticipationModel
+from .user import UserModel
+from .party_participation import PartyParticipationModel
 
 
 class PartyException(Exception):
@@ -15,7 +15,7 @@ class PartyModel(db.Model):
     __tablename__ = 'party'
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(120), unique=True, nullable=False)
+    name = db.Column(db.String(120), unique=True)
     latitude = db.Column(db.Float(5), default=0.0)
     longitude = db.Column(db.Float(5), default=0.0)
     description = db.Column(db.String, default="")

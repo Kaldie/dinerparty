@@ -8,8 +8,8 @@
     "develop": "nodemon --watch src/client",
     "serve_build": "yarn watch ",
     "lint": "vue-cli-service lint",
-    "server": "export FLASK_ENV=development && export FLASK_APP=src/server/app.py && flask run",
-    "both": "export FLASK_ENV=development && export FLASK_APP=src/server/app.py && flask run & vue-cli-service serve src/client/main.js"
+    "server": "export FLASK_ENV=development && export FLASK_APP=src/server/app.py && pipenv run flask run",
+    "both": "export FLASK_ENV=development ; export FLASK_APP=src/server/app.py ; pipenv run flask run & vue-cli-service serve src/client/main.js && fg"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.12",

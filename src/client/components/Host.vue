@@ -40,7 +40,7 @@
 
 
 <script>
-import PartyContent from './parties/PartyContent'
+import PartyContent from './parties/party_carousel/PartyContent'
 
 import { mapActions} from 'vuex'
 

@@ -3,7 +3,7 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-sm">
-                <img id=right-food-image class=column-food-image src="../../assets/food_images/food2.png"> 
+                <img id=right-food-image class=column-food-image src="../../../assets/food_images/food2.png"> 
                 <div class=content>
 
                     <b-carousel id="carousel2"
@@ -56,7 +56,6 @@ export default {
   methods: {
     ...mapActions('party',['findParties']),
     suitableParties: function() {
-        consol.warn("here!!")
       if ( this.refresh && this.position && this.position.coords) {
         getCurrentPositionPromise().then( (position) => {
           const currentLocation = {

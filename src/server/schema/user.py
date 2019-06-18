@@ -1,6 +1,10 @@
 from server.app import ma
 from marshmallow import Schema, fields, pprint
 from server.model.user import UserModel
+from server.model.party import PartyModel
+from server.model.party_participation import PartyParticipationModel
+
+piiSensitive = ["hosted_parties", "participation", "postalCode", "address", "city",'email']
 
 class UserSchema(ma.ModelSchema):
   email = fields.Email()

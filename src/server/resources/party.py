@@ -9,16 +9,17 @@ from server.model.party import PartyModel, PartyException
 class Party(Resource):
   @jwt_required
   def get(self):
-    party = PartySchema().load(request.form).data
+    schema = PartySchema()
+    party = schema.load(request.form).data
     party= PartyModel.find_by_name(party.name)
     return {
       "message": "Found party {}".format(party.name),
-      "party":PartySchema().dump(party)
+      "party": schema.dump(party)
     }
 
   @jwt_required
   def post(self):
-    party = PartySchema(strict=True).load(request.form).data
+    party = PartySchema(strict=True).load(request.values).data
     party.host_id = get_jwt_identity()["id"]
     try:
       party.addParty()
@@ -34,13 +35,13 @@ class Party(Resource):
   @jwt_required
   def patch(self):
     partySchema = PartySchema(strict=True)
-    oldParty= PartyModel.find_by_name(request.form["name"])
+    oldParty= PartyModel.find_by_name(request.values.get("name"))
     party = partySchema.load(request.form, instance = oldParty).data.update()
     return partySchema.dump(party)
 
   @jwt_required
   def delete(self):
-    party = PartySchema().load(request.form).data
+    party = PartySchema().load(request.values).data
 
     if hasattr(party,"id") and party.id is not None:
       dbParty = PartyModel.find_by_id(party.id)

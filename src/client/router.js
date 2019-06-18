@@ -1,6 +1,6 @@
 import VueRouter from 'vue-router'
 import Home from '@/client/components/Home'
-import ShowParties from '@/client/components/parties/Parties'
+import ShowParties from '@/client/components/parties/party_carousel/Parties'
 import Host from '@/client/components/Host'
 import Profile from '@/client/components/Profile'
 import Login from '@/client/components/Login'

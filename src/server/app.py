@@ -26,26 +26,28 @@ ma = Marshmallow(app)
 jwt = JWTManager(app)
 
 # import model
+from server.model.revoked_token import RevokedTokenModel
+from server.resources import users, party, parties, party_participation
 
-from resources import users, party, parties, party_participation
-from model.revoked_token import RevokedTokenModel
-
-Flask.env="debug"
-Flask.Debug=True
+Flask.env = "debug"
+Flask.Debug = True
 
 
 @app.before_first_request
 def create_tables():
-  db.create_all()
+    db.create_all()
+
 
 @jwt.token_in_blacklist_loader
 def check_if_token_in_blacklist(decrypted_token):
     jti = decrypted_token['jti']
     return RevokedTokenModel.is_jti_blacklisted(jti)
 
+
 @app.route("/")
 def webpage():
-  return send_file("/static/index.html")
+    return send_file("/static/index.html")
+
 
 api.add_resource(users.UserRegistration, '/registration')
 api.add_resource(users.UserLogin, '/login')
@@ -55,14 +57,10 @@ api.add_resource(users.TokenRefresh, '/token/refresh')
 api.add_resource(users.PasswordModification, '/user/password')
 
 api.add_resource(users.AllUsers, '/users')
-api.add_resource(users.User,"/user")
-api.add_resource(users.RequestUser,"/user/<string:id>")
+api.add_resource(users.User, "/user")
+api.add_resource(users.RequestUser, "/user/<string:id>")
 
-api.add_resource(party.Party,'/party')
-api.add_resource(parties.Parties,'/parties')
-api.add_resource(party_participation.PartyParticipationResource,'/party_participation')
-
-
-
-
-
+api.add_resource(party.Party, '/party')
+api.add_resource(parties.Parties, '/parties')
+api.add_resource(party_participation.PartyParticipationResource,
+                 '/party_participation')

@@ -20,13 +20,12 @@ def distanceBetween(partyLocation, currentLocation):
 
     assert((currentLocation.get("long", None) is not None) and
            (currentLocation.get("lat", None) is not None))
-
+    
     r1 = radians(partyLocation.get("lat"))
     r2 = radians(currentLocation.get("lat"))
     dl = radians(currentLocation.get("long") - partyLocation.get("long"))
     R = 637.1  # gives d in km
     return acos(sin(r1) * sin(r2) + cos(r1) * cos(r2) * cos(dl)) * R
-
 
 def approximateValidRange(location, distance):
     rangeApproximation = {
@@ -45,14 +44,13 @@ def approximateValidRange(location, distance):
     # degree difference is the least distance
     lat = radians(min(abs(rangeApproximation["latitude"]["min"]),
                       abs(rangeApproximation["latitude"]["max"])))
-    a = 1
+                      
     distanceOfOneDegreeOfLong = distanceOfOneDegreeOfLatitude * cos(lat)
     rangeApproximation["longitude"]["min"] = \
         location["long"] - (distance / distanceOfOneDegreeOfLong)
     rangeApproximation["longitude"]["max"] = \
         location["long"] + (distance / distanceOfOneDegreeOfLong)
     return rangeApproximation
-
 
 class Parties(Resource):
     @jwt_required
@@ -62,7 +60,7 @@ class Parties(Resource):
         assert(values.get("long", None))
 
         partyRange = float(values.get("range", 10))
-        logging.info("partyRange", partyRange)
+        logging.info("partyRange %s", partyRange)
 
         currentPosition = {
             "lat": float(values.get("lat")),

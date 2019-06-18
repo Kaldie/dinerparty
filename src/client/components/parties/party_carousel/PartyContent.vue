@@ -2,6 +2,8 @@
   <div class="content" id=dinner-information>
     <h4 id=diner-info> Diner Information </h4>
     <input v-model="party.name" id=diner_name type="text" class="form-control" placeholder="Diner name" :disabled="formDisabled"/>
+
+
     <input v-model="party.seats" id=diner_number_of_seats type="number" class="form-control" placeholder=2 :disabled="formDisabled"/>
 
     <div class="input-group sm" id=date-picker-input>
@@ -24,7 +26,7 @@
 
     <div v-if="showButton">
         <button v-if="cancelShowButton" type="button" v-on:click="formCancel" class="btn btn-danger float-left" >{{cancelText}}</button>
-        <button v-if="submitShowButton" type="submit" class="btn btn-primary float-right">{{submitText}}</button>
+        <button v-if="submitShowButton" type="submit" class="btn btn-primary float-right party-submit-button">{{submitText}}</button>
     </div>
   </div>
 </template>
@@ -44,7 +46,8 @@
     'submitText': {type:String, default:"Submit"},
     'submitShowButton':{type:Boolean, default:true},
     
-    'formDisabled': {type:Boolean, default: true}
+    'formDisabled': {type:Boolean, default: true},
+    'resolveSeats': {type:Boolean, default:false}
   },
   data() {
       console.warn("this.initialParty", this.initialParty)
@@ -95,6 +98,10 @@
 
 
 <style scoped>
+
+.party-submit-button {
+    margin-bottom: 0.2em;
+}
 
 #diner-info {
     text-align: left;
@@ -157,5 +164,7 @@ textarea {
 #datetimepicker {
     margin-top:0px
 }
-
+#dinner-information {
+  padding-bottom: .5em;
+}
 </style>

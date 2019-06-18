@@ -1,84 +1,90 @@
 from server.app import db
-import datetime
 from sqlalchemy.orm import relationship
-from user import UserModel
+from sqlalchemy.orm.exc import NoResultFound
+from .user import UserModel
+
+from server.model import logger
+
+from sqlalchemy import inspect
+
+
+#pylint: disable=no-member
 
 class PartyParticipationModel(db.Model):
-  __tablename__ = "party_participation"
+    __tablename__ = "party_participation"
 
-  id = db.Column(db.Integer, primary_key = True)
-  is_coming = db.Column(db.Boolean, default=True, nullable = True)
-  is_accepted = db.Column(db.Boolean, default=True, nullable = True)
-  
-  # relations
-  party_id = db.Column(db.Integer, db.ForeignKey('party.id') )
-  user_id = db.Column(db.Integer, db.ForeignKey('user.id') )
-  
-  #back ref
-  user = relationship("UserModel", backref = db.backref( "participation" ))
-  party = relationship("PartyModel", backref = db.backref( "participation" ))
+    id = db.Column(db.Integer, primary_key=True)
+    hostAccepted = db.Column(db.Boolean, default=False, nullable=True)
+    clientAccepted = db.Column(db.Boolean, default=False, nullable=True)
 
+    # relations
+    partyId = db.Column(db.Integer, db.ForeignKey('party.id'))
+    userId = db.Column(db.Integer, db.ForeignKey('user.id'))
 
-  @classmethod
-  def find_participants_by_id(cls, party_id):
-    return cls.query.filter_by(party_id = party_id)
+    # back ref
+    user = relationship("UserModel", backref=db.backref("participation"))
+    party = relationship("PartyModel", backref=db.backref("participation"))
 
-
-  @classmethod
-  def find_participants_by_name(cls, party_name):
-    return cls.query.filter_by(party_name = party_name)
-
-
-  @classmethod
-  def count_participants_by_id(cls, party_id):
-    return cls.find_participants_by_id().count()
-
-
-  @classmethod
-  def count_participants_by_name(cls, party_id):
-    return cls.find_participants_by_name().count()
-
-
-  def addParticipant(cls, party_id, user_id):
-    entry = self.query.filter_by(party_id = party_id, user_id = user_id)
+    def addPartyParticipation(self):
+        results = PartyParticipationModel.query.filter_by(party=self.party, user = self.user).all()
+            
+        assert len(results) <= 1  # for some reason, doing the query sets the state of self to persistent 
+        db.session.add(self)
+        db.session.commit()
     
-    if not entry:
-      db.session.add(self)
-    else:
-      self.is_coming = True
-      db.session.commit()
+    def update(self):
+        try:
+            PartyParticipationModel.query.filter_by(id=self.id).one()
+        except:
+            # TODO make better error handling
+            raise
 
+        db.session.commit()
+        return self
 
-  def removeParticipant(self, party_id, user_id):
-    entry = self.query.filter_by(party_id = party_id, user_id = user_id)
-    
-    if not entry:
-      db.session.add(self)
-    else:
-      self.is_coming = False
-      db.session.commit()
+    @classmethod
+    def delete_by_ids(cls, party, user):
+        results = PartyParticipationModel.query.filter_by(party=party, user = user).all()
+        for result in results:
+            db.session.delete(result)
 
+    @classmethod
+    def find_by_ids(cls, party, user):
+        logger.debug("party, user: %s, %s", party, user)
+        return PartyParticipationModel.query.filter_by(party=party, user=user).all()
 
-  @classmethod
-  def count_coming(cls, party_id):
-    return cls.accepting_users(party_id).count()
+    @classmethod
+    def find_participants_by_id(cls, partyId):
+        return cls.query.filter_by(partyId=partyId).all()
 
+    @classmethod
+    def find_participants_by_name(cls, party_name):
+        return cls.query.filter_by(party_name=party_name).all()
 
-  @classmethod
-  def count_decline(cls, party_id):
-    return cls.declining_users(party_id).count()
+    @classmethod
+    def count_participants_by_id(cls, partyId):
+        return cls.find_participants_by_id().count()
 
-  @classmethod
-  def declining_users(cls, party_id):
-    return cls.query.filter_by(party_id = party_id, is_coming = False)
+    @classmethod
+    def count_participants_by_name(cls, partyId):
+        return cls.find_participants_by_name().count()
 
+    @classmethod
+    def count_coming(cls, partyId):
+        return cls.accepting_users(partyId).count()
 
-  @classmethod
-  def accepting_users(cls, party_id):
-    return cls.query.filter_by(party_id = party_id, is_coming = True)
+    @classmethod
+    def count_decline(cls, partyId):
+        return cls.declining_users(partyId).count()
 
+    @classmethod
+    def declining_users(cls, partyId):
+        return cls.query.filter_by(partyId=partyId, clientAccepted=False).all()
 
-  @classmethod
-  def count_replies(cls, party_id):
-    return cls.query.filter_by(party_id = party_id).count()
+    @classmethod
+    def accepting_users(cls, partyId):
+        return cls.query.filter_by(partyId=partyId, clientAccepted=True).all()
 
+    @classmethod
+    def count_replies(cls, partyId):
+        return cls.query.filter_by(partyId=partyId).count()

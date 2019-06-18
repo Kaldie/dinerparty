@@ -1,5 +1,6 @@
 import datetime
 import logging
+
 from server.app import db, ma
 from passlib.hash import pbkdf2_sha256
 from sqlalchemy.orm import relationship
