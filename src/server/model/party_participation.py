@@ -63,11 +63,11 @@ class PartyParticipationModel(db.Model):
 
     @classmethod
     def count_participants_by_id(cls, partyId):
-        return cls.find_participants_by_id().count()
+        return cls.find_participants_by_id(partyId).count()
 
     @classmethod
     def count_participants_by_name(cls, partyId):
-        return cls.find_participants_by_name().count()
+        return cls.find_participants_by_name(partyId).count()
 
     @classmethod
     def count_coming(cls, partyId):
