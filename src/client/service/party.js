@@ -42,9 +42,7 @@ const partyInforms = (party, decision, side) => {
     headers: Object.assign(AuthHeader(), CrossOriginHeader),
   }
 
-  const formData = objectToFormData(formData)
-
-  return axios.post('party_participation', formData, config)
+  return axios.post('party_participation', objectToFormData(formData), config)
 }
 
 const clientInforms = (party, decision) => {

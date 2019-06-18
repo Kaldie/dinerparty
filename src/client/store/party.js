@@ -63,8 +63,6 @@ const mutations = {
     state.error = error
     state.foundParties = []
   }
-  
-
 }
 
 export const party = {
