@@ -25,3 +25,5 @@ yarn-error.log*
 
 # Parsed python files
 *.pyc
+Pipfile.lock
+Pipfile.lock
