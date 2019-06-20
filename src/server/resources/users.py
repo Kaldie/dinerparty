@@ -1,6 +1,6 @@
 import random
 import uuid
-import logging
+from . import logger
 from sqlalchemy.orm.exc import NoResultFound
 from flask import request
 from flask_restful import Resource
@@ -21,8 +21,7 @@ class UserException(Exception):
 class UserRegistration(Resource):
     def post(self):
         try:
-            newUser = UserSchema(strict=True, partial=True) \
-                .load(request.values).data
+            newUser = UserSchema(partial=True).load(request.values).data
         except ValidationError:
             return "User is not properly defined:"
 
@@ -56,7 +55,7 @@ class UserRegistration(Resource):
             }
 
         except Exception as error:
-            logging.error(error)
+            logger.error(error)
             return {'message': "Something has gone wrong"}, 500
 
 
@@ -66,21 +65,22 @@ class UserLogin(Resource):
                            if not UserLogin.showDebugMessage else x)
 
     def post(self):
-        logging.info("request.form", request.form)
+        logging.info("request.form: %s", request.form)
         user = UserSchema(partial=True).load(request.form).data
         logging.info(UserSchema().dump(user))
         if user.password is None:
+            logger.warn("No password is provided during login")
             return {"message": UserLogin.message(
                 "Username and password are required")}, 404
 
         try:
             databaseUser = UserModel.find_by_username(username=user.username)
-        except NoResultFound as noResult:
+        except NoResultFound:
             UserModel.verify_hash("randomness",
                                   UserModel.generate_hash(
                                     uuid.uuid4().hex[0:int(random.random()*20)]
                                     ))
-
+            logger.warn("User did not exist: %s", user.username)
             return {'message':
                     UserLogin.message(
                         "Unknown User {}".format(user.username))
@@ -101,13 +101,13 @@ class UserLogin(Resource):
                     "id": databaseUser.id
                 })
 
-            return {'message': 'Logged in as {}'.format(user.username),
-                    'access_token': access_token,
+            return {'access_token': access_token,
                     'refresh_token': refresh_token,
                     'username': user.username,
                     'email': user.email
                     }
         else:
+            logger.warn("Password did not exist for user: %s", user.username)
             return {
                 "message": UserLogin.message(
                     "Unknown password {} for user {}".format(
@@ -190,21 +190,30 @@ class AllUsers(Resource):
 class User(Resource):
 
     @jwt_required
-    def get(self):
+    def get(self, userId):
         user = UserModel.find_by_id(get_jwt_identity()["id"])
-        return UserSchema().dump(user)
+        if userId == get_jwt_identity()["id"]:
+            return UserSchema().dump(user)
+        else:
+            return UserSchema(exclude=UserSchema.piiSensitive).dump(u
 
     @jwt_required
-    def delete(self):
-        user = UserModel.find_by_id(get_jwt_identity()["id"])
-        return UserModel.remove(user)
+    def delete(self, userId):
+        if userId == get_jwt_identity()["id"]:
+            user = UserModel.find_by_id(get_jwt_identity()["id"])
+            return UserModel.remove(user)
+        else:
+            return {"message": "Not allowed to delete an other user"}, 400
 
     @jwt_required
-    def patch(self):
+    def patch(self, userId):
+        if userId != get_jwt_identity()["id"]:
+            return {"message": "Not allowed to delete an other user"}, 400
+
         userSchema = UserSchema()
         oldUser = UserModel.find_by_id(get_jwt_identity()["id"])
-        loggin.info("oldUser", oldUser.password)
-        loggin.info("request.form", request.form)
+        logging.info("oldUser", oldUser.password)
+        logging.info("request.form", request.form)
         updatedUser = userSchema.load(
             request.form, instance=oldUser).data.update()
         return userSchema.dump(updatedUser)
@@ -214,4 +223,4 @@ class RequestUser(Resource):
     @jwt_required
     def get(self, id):
         user = UserModel.find_by_id(id)
-        return UserSchema(exclude=['address', 'city', "postalCode"]).dump(user)
+        return UserSchema(exclude=UserSchema.piiSensitive).dump(user)

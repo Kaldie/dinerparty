@@ -1,6 +1,7 @@
 import datetime
 
 from server.app import db
+#pylint: disable=no-member
 from sqlalchemy.orm import relationship
 from sqlalchemy import exc
 from .user import UserModel
@@ -57,6 +58,10 @@ class PartyModel(db.Model):
     @classmethod
     def find_by_id(cls, id):
         return cls.query.filter_by(id=id).one()
+
+    @classmethod
+    def find_by_host(cls, host_id):
+        return cls.query.filder_by(host_id=host_id).all()
 
     @classmethod
     def find_by_range(cls, rangeDict):

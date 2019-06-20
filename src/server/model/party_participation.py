@@ -1,3 +1,5 @@
+#pylint: disable=no-member
+
 from server.app import db
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm.exc import NoResultFound
@@ -8,22 +10,27 @@ from server.model import logger
 from sqlalchemy import inspect
 
 
-#pylint: disable=no-member
-
 class PartyParticipationModel(db.Model):
     __tablename__ = "party_participation"
 
     id = db.Column(db.Integer, primary_key=True)
-    hostAccepted = db.Column(db.Boolean, default=False, nullable=True)
-    clientAccepted = db.Column(db.Boolean, default=False, nullable=True)
-
+    #has the host responded
+    hostResponse = db.Column(db.Integer, default=0)
+    
+    #has the client responded
+    clientResponse = db.Column(db.Integer, default=0)
+    
     # relations
     partyId = db.Column(db.Integer, db.ForeignKey('party.id'))
     userId = db.Column(db.Integer, db.ForeignKey('user.id'))
 
     # back ref
-    user = relationship("UserModel", backref=db.backref("participation"))
-    party = relationship("PartyModel", backref=db.backref("participation"))
+    user = relationship("UserModel")
+    party = relationship("PartyModel")
+
+    UNKNOWN = 0
+    ACCEPTED = 1
+    REJECTED = 2 
 
     def addPartyParticipation(self):
         results = PartyParticipationModel.query.filter_by(party=self.party, user = self.user).all()
@@ -43,18 +50,22 @@ class PartyParticipationModel(db.Model):
         return self
 
     @classmethod
+    def find_by_id(cls,id):
+        return PartyParticipationModel.query.filter_by(id=id).one()
+
+    @classmethod
     def delete_by_ids(cls, party, user):
         results = PartyParticipationModel.query.filter_by(party=party, user = user).all()
         for result in results:
             db.session.delete(result)
 
     @classmethod
-    def find_by_ids(cls, party, user):
-        logger.debug("party, user: %s, %s", party, user)
-        return PartyParticipationModel.query.filter_by(party=party, user=user).all()
+    def find_by_ids(cls, partyId, userId):
+        logger.debug("party, user: %s, %s", partyId, userId)
+        return PartyParticipationModel.query.filter_by(partyId=partyId, userId=userId).all()
 
     @classmethod
-    def find_participants_by_id(cls, partyId):
+    def find_participants_by_party_id(cls, partyId):
         return cls.query.filter_by(partyId=partyId).all()
 
     @classmethod
@@ -63,7 +74,7 @@ class PartyParticipationModel(db.Model):
 
     @classmethod
     def count_participants_by_id(cls, partyId):
-        return cls.find_participants_by_id(partyId).count()
+        return cls.find_participants_by_party_id(partyId).count()
 
     @classmethod
     def count_participants_by_name(cls, partyId):

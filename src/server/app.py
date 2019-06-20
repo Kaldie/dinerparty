@@ -62,5 +62,7 @@ api.add_resource(users.RequestUser, "/user/<string:id>")
 
 api.add_resource(party.Party, '/party')
 api.add_resource(parties.Parties, '/parties')
-api.add_resource(party_participation.PartyParticipationResource,
-                 '/party_participation')
+
+api.add_resource(party_participation.PartyParticipations, '/participations/<string:partyId>')
+api.add_resource(party_participation.PendingPartyParticipations, '/participations/pending/<string:partyId>')
+api.add_resource(party_participation.PartyParticipation, '/participation/<string:participationId>')
