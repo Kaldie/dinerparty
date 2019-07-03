@@ -21,7 +21,6 @@
             <div id='button-row' class="row">
                 <router-link to="/" class="btn btn-danger float-left">Cancel</router-link>
 
-             
                     <router-link to="/register" class="btn btn-link">Register</router-link>
                     <button class="btn btn-primary" v-if='isLoggedIn() === false'>Login
                     </button>
