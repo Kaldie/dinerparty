@@ -61,14 +61,14 @@ const update = (user) => {
   let config = {
     headers: Object.assign(AuthHeader(), CrossOriginHeader),
   }
-  return axios.patch(`user`, objectToFormData(user), config)
+  return axios.patch(`me`, objectToFormData(user), config)
 }
 
 const get = () => {
   let config = {
     headers: Object.assign(AuthHeader(), CrossOriginHeader),
   }
-  return axios.get(`user`,config)
+  return axios.get(`me`,config)
 }
 
 const resetPassword = (passwordObject) => {
@@ -78,11 +78,11 @@ const resetPassword = (passwordObject) => {
   return axios.post(`user/password`, objectToFormData(passwordObject), config)
 }
 
-const getUser = (id) => {
+const getUser = (userName) => {
   let config = {
     headers: Object.assign(AuthHeader(), CrossOriginHeader)
   }
-  return axios.post(`user/${id}`, config)
+  return axios.post(`user/${userName}`, config)
 }
 
 

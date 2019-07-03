@@ -52,7 +52,7 @@ def approximateValidRange(location, distance):
         location["long"] + (distance / distanceOfOneDegreeOfLong)
     return rangeApproximation
 
-class Parties(Resource):
+class PartiesInRange(Resource):
     @jwt_required
     def get(self):
         values = request.values
@@ -78,3 +78,9 @@ class Parties(Resource):
                 validParties.append(party)
 
         return PartySchema().dump(validParties, many=True)
+
+class HostedParties(Resource):
+    @jwt_required
+    def get(self):
+        hostId = get_jwt_identity()["id"]
+        return PartySchema(many=True).dump(PartyModel.find_by_host(hostId))

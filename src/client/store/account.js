@@ -1,7 +1,7 @@
 
 import { UserService } from '@/client/service/users'
 import myRouter from '@/client/router'
-import { retryAfterTokenRefresh } from './utilities'
+import { retryAfterTokenRefresh } from '@/client/utilities/'
 
 let user
 try {
@@ -42,9 +42,9 @@ const actions = {
         error => commit('registerFailure', error)
       )
   },
-  get({commit}) {
+  get({commit}, userName) {
     retryAfterTokenRefresh(
-      () => {commit('getUserRequest'); return UserService.get() },
+      () => {commit('getUserRequest'); return UserService.get(userName) },
       (result) => commit('getUserSucces', result),
       (error) => commit('getUserFailure', error)
     )

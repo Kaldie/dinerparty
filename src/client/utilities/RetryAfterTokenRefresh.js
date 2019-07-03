@@ -1,5 +1,5 @@
 import { UserService } from '@/client/service/users'
-import { account } from './account'
+import { account } from '../store/account'
 
 // call this function when a valid token is required
 // the first param should be the function
@@ -9,25 +9,24 @@ export const retryAfterTokenRefresh = (...args) => {
   const action = args[0]
   let currentArgumentNumber = 1
   const parameters = []
-  while (typeof args[currentArgumentNumber] !== "function") {
+  while (typeof args[currentArgumentNumber] !== "function" && currentArgumentNumber < args.length) {
     parameters.push(args[currentArgumentNumber])
     ++currentArgumentNumber
   }
 
   // eslint-disable-next-line no-unused-vars
-  let succes = (...args) => {}
+  let succes = (result) => result
   if (args[currentArgumentNumber]) {
     succes = args[currentArgumentNumber]
     ++currentArgumentNumber
   }
 
   // eslint-disable-next-line no-unused-vars
-  let failure = (...args) => {}
+  let failure = (error) => error
   if (args[currentArgumentNumber]) {
     failure = args[currentArgumentNumber]
     ++currentArgumentNumber
   }
-
 
   return action(...parameters)
   .then(
@@ -39,7 +38,7 @@ export const retryAfterTokenRefresh = (...args) => {
           .then(
             result => {
               account.mutations.refreshSucces(account.state, result.data.access_token)
-              action(...parameters).then(
+              return action(...parameters).then(
                 result => succes(result),
                 error => failure(error)
               )

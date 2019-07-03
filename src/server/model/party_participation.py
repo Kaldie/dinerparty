@@ -22,7 +22,7 @@ class PartyParticipationModel(db.Model):
     
     # relations
     partyId = db.Column(db.Integer, db.ForeignKey('party.id'))
-    userId = db.Column(db.Integer, db.ForeignKey('user.id'))
+    clientId = db.Column(db.Integer, db.ForeignKey('user.id'))
 
     # back ref
     user = relationship("UserModel")
@@ -60,9 +60,9 @@ class PartyParticipationModel(db.Model):
             db.session.delete(result)
 
     @classmethod
-    def find_by_ids(cls, partyId, userId):
-        logger.debug("party, user: %s, %s", partyId, userId)
-        return PartyParticipationModel.query.filter_by(partyId=partyId, userId=userId).all()
+    def find_by_ids(cls, partyId, clientId):
+        logger.debug("party, user: %s, %s", partyId, clientId)
+        return PartyParticipationModel.query.filter_by(partyId=partyId, clientId=clientId).all()
 
     @classmethod
     def find_participants_by_party_id(cls, partyId):

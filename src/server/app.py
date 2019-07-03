@@ -56,12 +56,14 @@ api.add_resource(users.UserLogoutRefresh, '/logout/refresh')
 api.add_resource(users.TokenRefresh, '/token/refresh')
 api.add_resource(users.PasswordModification, '/user/password')
 
+api.add_resource(users.User, "/me")
+api.add_resource(users.RequestUser, "/user/<string:userName>")
 api.add_resource(users.AllUsers, '/users')
-api.add_resource(users.User, "/user")
-api.add_resource(users.RequestUser, "/user/<string:id>")
 
-api.add_resource(party.Party, '/party')
-api.add_resource(parties.Parties, '/parties')
+api.add_resource(party.Party, '/party/<string:partyId>')
+api.add_resource(parties.HostedParties, '/me/parties')
+api.add_resource(parties.PartiesInRange, '/parties/range')
+# api.add_resource(parties.Parties, '/parties/user/<string:userName>') TODO: do it!
 
 api.add_resource(party_participation.PartyParticipations, '/participations/<string:partyId>')
 api.add_resource(party_participation.PendingPartyParticipations, '/participations/pending/<string:partyId>')

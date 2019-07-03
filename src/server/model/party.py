@@ -61,7 +61,7 @@ class PartyModel(db.Model):
 
     @classmethod
     def find_by_host(cls, host_id):
-        return cls.query.filder_by(host_id=host_id).all()
+        return cls.query.filter_by(host_id=host_id).all()
 
     @classmethod
     def find_by_range(cls, rangeDict):

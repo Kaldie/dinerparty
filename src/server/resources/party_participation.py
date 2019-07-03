@@ -67,8 +67,8 @@ class PartyParticipations(Resource):
 
         logger.debug("user: %s", user)
 
-        if party.host.id = user.id:
-            logger.error("Host cannot invite himself. UserName: %s, Party: %s", user.username, party.)
+        if party.host.id == user.id:
+            logger.error("Host cannot invite himself. UserName: %s, Party: %s", user.username, party.name)
             return {"message": "Host cannot invite himself"}, 400
 
         participations = PartyParticipationModel.find_by_ids(party.id, user.id)
@@ -85,7 +85,7 @@ class PartyParticipations(Resource):
             logger.error("Fond participation, please use other routes to modify it.")
             return {"message": "Fond participation, please use other routes to modify it."}, 500
 
-        return participation
+        return PartyParticipationSchema().dump(participation)
 
     @jwt_required
     def patch(self, partyId):

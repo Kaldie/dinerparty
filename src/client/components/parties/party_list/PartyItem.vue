@@ -5,7 +5,7 @@
         </b-card-header>
         <b-collapse :id="'party-' + party.id" visible accordion="my-accordion" role="tabpanel">
         <b-card-body>
-            <PartyContent v-bind:initialParty="party" v-bind="partyContent"></PartyContent>
+          <PartyContent v-bind:initialParty="party" v-bind="partyContent"></PartyContent>
         </b-card-body>
         </b-collapse>
     </b-card>
@@ -13,6 +13,7 @@
 
 <script>
 import PartyContent from '../party_carousel/PartyContent'
+import { PartyService } from '@/client/service/party';
 export default {
     name:"PartyItem",
     components: {
@@ -22,17 +23,27 @@ export default {
         "party":Object
     },
     data() {
-    return {
-      partyContent : {
-        showButton:true,
-        cancelShowButton:false,
-        submitText:"Update",
-        formDisabled:false,
-        onClickCancel: () => {
-          console.log("declineing the party")
+      return {
+        partyContent : {
+          showButton:true,
+          cancelShowButton:false,
+          inventationShowButton:true,
+          submitText:"Update",
+          formDisabled:false,
+          onClickCancel: () => {
+            // TODO: fix it
+          },
+          onClickSubmit: (party) => {
+            PartyService.updateParty(party)
+
+          }
         }
       }
-    }
+    },
+    methods: {
+      handleSubmit: function() {
+        PartyService.updateParty(this.party)
+      }
   },
 }
 </script>

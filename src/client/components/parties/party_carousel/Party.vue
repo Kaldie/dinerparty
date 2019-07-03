@@ -6,9 +6,7 @@
 
     <!--fall back if it has not-->
     <b-carousel-slide  img-blank img-alt="Blank image" >
-      <form @submit.prevent="handleSubmit">
       <PartyContent  v-bind:initialParty="party" v-bind="partyContent"/>
-      </form>
     </b-carousel-slide>
 </template>
 
@@ -24,6 +22,7 @@ input.input-party-name {
 import '@/../imported-lib/lala/jquery.datetimepicker.full.js'
 import '@/../imported-lib/lala/jquery.datetimepicker.min.css'
 import PartyContent from './PartyContent'
+import { PartyService } from '@/client/service/party'
 export default {
   name:"Party",
   data() {
@@ -34,8 +33,9 @@ export default {
         cancelShowButton:true,
         submitText:"Request Invite",
         cancelText: "Decline",
-        onClickCancel: () => {
-          console.log("declineing the party")
+        onClickCancel: () => {},
+        onClickSubmit: ()=> {
+          PartyService.requestInvite(this.party.id)
         }
       }
     }
@@ -49,10 +49,7 @@ export default {
   methods: {
     imageSrc: function() {
       return this.party.image
-    },
-    handleSubmit: () => {
-      console.warn("handle submit!")
-    } 
+    }
   }
 }
 </script>

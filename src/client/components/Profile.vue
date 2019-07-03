@@ -1,47 +1,20 @@
 <template name="Profile">
 <div>
-    <PasswordModal v-show="isModalVisible" @close="closeModal"></PasswordModal>
+    <PasswordModal></PasswordModal>
 
-    <div class="container">
-        <div class="row">
-            <div class="col-sm-10"> 
-             <h1 id=header >{{header}}</h1>
-            </div>
-        </div>       
+    <div class="container column">
+        <h1 id=header >{{header}}</h1>
+        <User v-bind:showPassword="false" v-bind:showEmail="true" v-bind:showLocation="true"></User>
         
-        <div class="row">
-            <div class="col-sm-10"> 
-                <form @submit.prevent="handleSubmit">
-                    <User v-bind:showPassword="false" v-bind:showEmail="true" v-bind:showLocation="true"></User>
-                    
-                    <div class="container-fluid" id=button_container>
-                        <div class="col-sm-2 float-left" id=cancel_button_container >
-                            <router-link to="/" class="btn btn-danger form-group-button ">Cancel</router-link> 
-                        </div>
-
-                        <div class="float-right" >
-                            <div class="form-group form-group-button">
-                                <button v-show="!showPassword" class="btn btn-primary control-pair-left" type=button v-b-modal="'password-modal'">reset password</button>
-                                <button class="btn btn-primary" type=submit :enabled="status.loggedIn">{{submitButtonText}}</button> 
-                            </div>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div> 
-
-
-        <div class="row">
-            <div class="col-sm-10"> 
-                <h1>Hosted Diners</h1>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-sm-10"> 
-            <PartyList v-bind:parties='parties()'></PartyList> 
-            </div>
+        <div class="container column" id="button_container">
+            <router-link to="/" class="btn">Cancel</router-link> 
+            <a class="btn" href="#open-modal" v-show="!showPassword">Reset Password</a>
+            <a class="btn" @click="handleSubmit" :enabled="status.loggedIn">{{submitButtonText}}</a> 
         </div>
     </div>
+    <h2>Hosted Diners</h2>
+    
+    <PartyList v-bind:parties=parties></PartyList> 
 </div>
 </template>
 
@@ -52,6 +25,7 @@ import {mapState, mapActions} from 'vuex'
 import PasswordModal from './PasswordModal';
 import User from './User'
 import PartyList from './parties/party_list/PartyList'
+import { PartyService } from '@/client/service/party'
 
 export default {
     name:"Profile",
@@ -81,16 +55,20 @@ export default {
     data() {
         return {
             submitted : false,
-            isModalVisible: false
+            isModalVisible: false,
+            parties: []
         }
     },
     computed: {
         ...mapState('account', ['status', 'user'])
     },
-    mounted () {
-        if (this.status.loggedIn) {
-            this.get()
+    mounted() {
+        if (this.status.loggedIn && this.user) {
+            this.get(this.user.username)
         }
+        PartyService.getHostedParties().then((result) => {
+                this.parties = result.data || [] 
+            })
     },
     methods: {
         ...mapActions('account', ['get']),
@@ -99,7 +77,7 @@ export default {
             this.$validator.validate().then(valid => {
                 if (valid) {
                     this.$store.dispatch(this.dispatchMethod, this.user).then(() => {
-                        this.get()
+                        this.get(this.user.username)
                     })
                     
                 }
@@ -113,45 +91,15 @@ export default {
         },
         closeModal() {
             this.isModalVisible = false;
-        },
-        parties() {
-            return [{name:"alal", id:1}, {name:"bala", id:2}]
         }
     }
 }
 </script>
 
-<style>
-.container {
-    position: absolute;
-    top: 25%;
-}
-
-.col-form-label{
-    text-align: right;
-}
-
+<style lang=scss scoped>
 #button_container {
-    padding-left: 0%;
-    padding-right: 0%
-}
-
-#cancel_button_container {
-    padding-left: 2.5em
-}
-
-.control-pair-left {
-    margin-right: 0.5em;
-}
-.control-pair-right {
-    margin-left: 0.5em
-}
-.control-pair-middle {
-    margin-left: 0.5em;
-    margin-right: 0.5em;
-}
-
-.form-group-button {
-    margin-top:1em;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
 }
 </style>

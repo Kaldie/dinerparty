@@ -65,9 +65,9 @@ class UserLogin(Resource):
                            if not UserLogin.showDebugMessage else x)
 
     def post(self):
-        logging.info("request.form: %s", request.form)
+        logger.info("request.form: %s", request.form)
         user = UserSchema(partial=True).load(request.form).data
-        logging.info(UserSchema().dump(user))
+        logger.info(UserSchema().dump(user))
         if user.password is None:
             logger.warn("No password is provided during login")
             return {"message": UserLogin.message(
@@ -190,15 +190,12 @@ class AllUsers(Resource):
 class User(Resource):
 
     @jwt_required
-    def get(self, userId):
-        user = UserModel.find_by_id(get_jwt_identity()["id"])
-        if userId == get_jwt_identity()["id"]:
-            return UserSchema().dump(user)
-        else:
-            return UserSchema(exclude=UserSchema.piiSensitive).dump(u
+    def get(self):
+        user = UserModel.find_by_id(get_jwt_identity()["id"])       
+        return UserSchema().dump(user)
 
     @jwt_required
-    def delete(self, userId):
+    def delete(self,):
         if userId == get_jwt_identity()["id"]:
             user = UserModel.find_by_id(get_jwt_identity()["id"])
             return UserModel.remove(user)
@@ -206,14 +203,11 @@ class User(Resource):
             return {"message": "Not allowed to delete an other user"}, 400
 
     @jwt_required
-    def patch(self, userId):
-        if userId != get_jwt_identity()["id"]:
-            return {"message": "Not allowed to delete an other user"}, 400
-
+    def patch(self):
         userSchema = UserSchema()
         oldUser = UserModel.find_by_id(get_jwt_identity()["id"])
-        logging.info("oldUser", oldUser.password)
-        logging.info("request.form", request.form)
+        logger.info("oldUser", oldUser.password)
+        logger.info("request.form", request.form)
         updatedUser = userSchema.load(
             request.form, instance=oldUser).data.update()
         return userSchema.dump(updatedUser)
@@ -221,6 +215,7 @@ class User(Resource):
 
 class RequestUser(Resource):
     @jwt_required
-    def get(self, id):
-        user = UserModel.find_by_id(id)
+    def get(self, userName):
+        logger.error("userName %s", userName)
+        user = UserModel.find_by_username(userName)
         return UserSchema(exclude=UserSchema.piiSensitive).dump(user)

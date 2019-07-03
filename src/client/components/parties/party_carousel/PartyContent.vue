@@ -1,47 +1,58 @@
 <template>
-  <div class="content" id=dinner-information>
+<div class="container">
+  <div class="container column" id=dinner-information>
+    
     <h4 id=diner-info> Diner Information </h4>
-    <input v-model="party.name" id=diner_name type="text" class="form-control" placeholder="Diner name" :disabled="formDisabled"/>
+    
+    <input v-model="party.name" type="text"  placeholder="Diner name" :disabled="formDisabled"/>
+    <input v-model="party.seats" type="number" placeholder="Number available seats" :disabled="formDisabled"/>
 
 
-    <input v-model="party.seats" id=diner_number_of_seats type="number" class="form-control" placeholder=2 :disabled="formDisabled"/>
-
-    <div class="input-group sm" id=date-picker-input>
-      <input :id="'datetimepicker-' + party.id" type="text" class="form-control" placeholder="Date" :disabled="formDisabled"/>
-      <b-input-group-append>
-        <button class="input-group-text" id="basic-addon2" v-on:click="showDateTime">
+    <div class="" id=date-picker-input>
+      <input :id="'datetimepicker-' + party.id" type="text" placeholder="Date" :disabled="formDisabled"/>
+        <button class="input-group-text" v-on:click="showDateTime" :disabled="formDisabled">
           <font-awesome-icon icon="calendar"/>
         </button>
-      </b-input-group-append>
     </div>   
 
-    <textarea v-model="party.description" class="form-control" id="diner_description-text-area" rows="1" placeholder="Description of the diner" :disabled="formDisabled"/>
+    <textarea v-model="party.description" rows="1" placeholder="Description of the diner" :disabled="formDisabled"/>
 
-    <div class="input-group form-check" id=teach-check-input v-bind:class="{'disabled-check-form-box':formDisabled}" :disabled="formDisabled">
-      <div id=inner-checkbox-group>
-        <input v-model="party.teaching" type="checkbox" class=form-check-input id="has-guidance" aria-label="Checkbox" :disabled="formDisabled" >
+      <div class=container id='teach-button-container'>
         <label class="form-check-label" for="has-guidance">Will teach</label>
-      </div>
-    </div>
+        <input v-model="party.teaching" type="checkbox" class=form-check-input id="has-guidance" aria-label="Checkbox" :disabled="formDisabled" >
+      </div>  
 
     <div v-if="showButton">
         <button v-if="cancelShowButton" type="button" v-on:click="formCancel" class="btn btn-danger float-left" >{{cancelText}}</button>
-        <button v-if="submitShowButton" type="submit" class="btn btn-primary float-right party-submit-button">{{submitText}}</button>
+        <div class=float-right>
+          <a v-if="inventationShowButton" type="button" v-on:click="$bvModal.show('inventations-' + party.id)" class="btn">Invitations</a>
+          <a v-if="submitShowButton" type="button" v-on:click="formSubmit" class="btn ">{{submitText}}</a>
+        </div>
     </div>
+    <Inventations v-bind:party="party"></Inventations>
+
+
   </div>
+</div>
 </template>
 
 
 <script> 
+  import Inventations from '@/client/components/parties/Inventations.vue'
   export default {
   name:"PartyContent",
+  components: {
+    Inventations
+    },
   props: {
     "initialParty" : Object,
     'showButton': {type:Boolean, default:false},
+    "inventationShowButton": {type:Boolean, default: false},
 
     'cancelText': {type:String, default:"Reset"},
     'cancelShowButton':{type:Boolean, default:true},
     'onClickCancel': {type: Function},
+    'onClickSubmit': {type: Function},
 
     'submitText': {type:String, default:"Submit"},
     'submitShowButton':{type:Boolean, default:true},
@@ -50,7 +61,6 @@
     'resolveSeats': {type:Boolean, default:false}
   },
   data() {
-      console.warn("this.initialParty", this.initialParty)
       return {
           party: this.initialParty
       }
@@ -63,9 +73,6 @@
   methods: {
     showDateTime: function() {
       $(`#datetimepicker-${this.party.id}`).datetimepicker('show');
-    },
-    requestInvite: (event) => {
-      event.preventDefault()
     },
     resetForm() {
         this.party = {
@@ -86,6 +93,12 @@
             this.resetForm()
         }    
     },
+    formSubmit() {
+      this.party.date = $(`#datetimepicker-${this.party.id}`).datetimepicker('getValue');
+      if (this.onClickSubmit) {
+          this.onClickSubmit(this.party)
+      }
+    }
   },
   computed: {
     description: function() {
@@ -96,74 +109,28 @@
 </script>
 
 
-<style scoped>
+<style scoped lang="less">
+.container {
 
-.party-submit-button {
-    margin-bottom: 0.2em;
+  justify-content: center;
 }
 
-#diner-info {
-    text-align: left;
-}
+#teach-button-container {
+  justify-content: space-between;
+  align-items: flex-start;
+  background-color: white;
+  margin:0%;
 
-input[id^="datetimepicker"] {
-    margin-top: 0px;
-}
-
-.disabled-check-form-box {
-    background-color: #efe9ea !important;
-}
-
-
-.form-check-input:disabled ~ .form-check-label {
-    color: #495057;
-}
-
-#teach-check-input {
-    background-color:white;
-    border: 1px solid #ced4da;
-    border-radius: 0.25rem;
-    height: calc(1.5em + 0.75rem + 2px);
-    margin-top: 0.25em;
-    margin-bottom: 0.25em;
-    padding-top: 0.375rem;
-    padding-bottom: 0.375rem; 
-    color:rgb(73, 80, 87);
-    text-shadow: none;
-}
-
-#inner-checkbox-group {
-    margin-left: 0.6em;
-}
-
-
-.column-food-image {
-  width: 100%;
-  height: 100%;
-}
-
-input {
-  margin-top:0.25em;
-  margin-bottom: 0.25em;
-}
-
-textarea {
-  margin-top:0.25em;
-  margin-bottom: 0.25em;
-}
-
-.control-pair-left {
-  margin-right: 0.5em;
-}
-
-.control-pair-right {
-  margin-left: 0.5em;
-}
-
-#datetimepicker {
-    margin-top:0px
-}
-#dinner-information {
-  padding-bottom: .5em;
+    border-width: 0.5px;
+    border-style: inset;
+    border-top-style: inset;
+    border-right-style: inset;
+    border-bottom-style: inset;
+    border-left-style: inset;
+    border-color: initial;
+    border-image: initial;
+  label {
+    margin-left: 0.1em;
+  }
 }
 </style>

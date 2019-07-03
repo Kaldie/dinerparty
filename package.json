@@ -16,12 +16,9 @@
     "@fortawesome/free-solid-svg-icons": "^5.6.3",
     "@fortawesome/vue-fontawesome": "^0.1.4",
     "axios": "^0.18.0",
-    "bootstrap-vue": "^2.0.0-rc.21",
     "glyphicons": "^0.2.0",
     "jquery": "^3.4",
-    "mapbox-gl": "^0.52.0",
     "moments": "^0.0.2",
-    "npm-watch": "^0.5.0",
     "object-to-formdata": "^1.6.4",
     "promise": "^8.0.2",
     "vee-validate": "^2.2.2",
@@ -38,6 +35,10 @@
     "eslint-plugin-vue": "^5.0.0-0",
     "less": "^3.9.0",
     "less-loader": "^4.1.0",
+    "node-sass": "^4.12.0",
+    "npm-watch": "^0.5.0",
+    "sass-loader": "^7.1.0",
+    "scss-loader": "^0.0.1",
     "vue-template-compiler": "^2.5.17"
   },
   "eslintConfig": {

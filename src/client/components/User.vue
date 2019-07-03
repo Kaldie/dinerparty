@@ -1,76 +1,68 @@
  <template name="User">
  <div>
-    <div class="form-group row">
-        <label for=user_name class="col-sm-2 col-form-label" >User Name</label>
-        <div class="col-sm-10">
-            <input id=user_name v-model="user.username" type="text" v-validate="{ required: true }" name="username" class="form-control" placeholder="required"/>
+    <div class="container" >
+        <div class="container column" id="user-container">
+            <label for=user_name class="col-sm-2 col-form-label" >User Name</label>
+            <label for=email class="col-sm-2 col-form-label" >Email</label>
+            <label v-if="showPassword" for=password class="col-sm-2 col-form-label" >Password</label>
+        </div>
+
+        <div class="container column">
+            <input id=user_name v-model="user.username" type="text" v-validate="{ required: true }" name="username"  placeholder="required"/>
+            <input id=email type="text" v-model="user.email" v-validate="{ required: true }" name="email" placeholder="required"/>
+            <input v-if="showPassword" id=password type="password" v-model="user.password" v-validate="{ required: true }" name="password"  placeholder="required"/>
         </div>
     </div>
 
-    <div class="form-group row" v-if="showPassword">
-        <label for=password class="col-sm-2 col-form-label" >Password</label>
-        <div class="col-sm-10">
-            <input id=password type="password" v-model="user.password" v-validate="{ required: true }" name="password" class="form-control" placeholder="required"/>
-        </div>
+    <div class='container location-container'>
+      <div class="container column location-container">
+        <label for=location>Location</label>
     </div>
 
-    <div class="form-group row" v-if="showEmail">
-        <label for=user_name class="col-sm-2 col-form-label" >Email</label>
-        <div class="col-sm-10">
-            <input id=email type="text" v-model="user.email" v-validate="{ required: true }" name="email" class="form-control" placeholder="required"/>
-        </div>
+    <div class="container column location-container">
+        <input type="text" v-model="user.address" placeholder="Address" v-validate="{ required: false }" name="address" />
+        <input type="text" placeholder='City' v-model="user.city" name="City" />
     </div>
-
-    <div class="form-group row" v-if="showLocation">
-        <label for=user_name class="col-sm-2 col-form-label" >Location</label>
-        <div class="col-sm-10">
-            <div class="input-group">
-                <input type="text" v-model="user.address" placeholder="Address" v-validate="{ required: false }" name="address" class="form-control control-pair-left" />
-                <input type="text" placeholder='City' v-model="user.city" name="City" class="form-control control-pair-right" />
-            </div>
-        </div>
-    </div>
+  </div>
  </div>
 </template>
 
-<style>
+<style scoped>
+
+
+
 .container {
-    position: absolute;
-    top: 25%;
-    left: 50%;
-    -moz-transform: translateX(-50%) translateY(-25%);
-    -webkit-transform: translateX(-50%) translateY(-25%);
-    transform: translateX(-50%) translateY(-25%);
+  justify-content: center;
+  margin-bottom: 0px;
 }
 
-.col-form-label{
-    text-align: right;
+.container.column {
+  justify-content: space-between;
+  margin-right: 0.3em;
 }
 
-
-#button_container {
-    padding-left: 0%;
-    padding-right: 0%
+input{
+  margin: 0.1em;
 }
 
-#cancel_button_container {
-    padding-left: 2.5em
+label {
+  margin-top:auto;
+  margin-bottom: auto;
 }
 
-.control-pair-left {
-    margin-right: 0.5em;
-}
-.control-pair-right {
-    margin-left: 0.5em
-}
-.control-pair-middle {
-    margin-left: 0.5em;
-    margin-right: 0.5em;
+label[for='location'] {
+  margin:auto;
+  margin-right: 1.3em;
 }
 
-.form-group-button {
-    margin-top:1em;
+#user-container, #location-container {
+  align-items: flex-start;
 }
+
+div.location-container {
+  margin-top:0px;
+}
+
 </style>
 
 <script>
@@ -99,8 +91,8 @@ export default {
     ...mapActions('account', ['get']),
     },
   mounted () {
-      if (this.status.loggedIn) {
-          this.get()
+      if (this.status.loggedIn && this.user.userName) {
+          this.get(this.user.userName)
       }
     },
 }

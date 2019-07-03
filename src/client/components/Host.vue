@@ -4,11 +4,8 @@
         <div class="row">
             <div class="col-sm">
                 <img id=right-food-image class=column-food-image src="../assets/food_images/food2.png"> 
-                <form @submit.prevent="handleSubmit">
-                    <PartyContent v-bind:initialParty="newParty" v-bind="partyContent"/>/>
-                </form>
+                <PartyContent v-bind:initialParty="newParty" v-bind="partyContent"/>/>
             </div>
-
         </div>
     </div> 
 </div>
@@ -41,8 +38,8 @@
 
 <script>
 import PartyContent from './parties/party_carousel/PartyContent'
+import { PartyService } from '@/client/service/party';
 
-import { mapActions} from 'vuex'
 
 export default {
     name:"Host",
@@ -65,17 +62,12 @@ export default {
                 showButton:true,
                 cancelShowButton:true,
                 submitText:"Register",
-                formDisabled:false
-                // onClickCancel: () => {console.warn("here!! cancel clicked")}
+                formDisabled:false,
+                onClickSubmit: function( party) {
+                    PartyService.registerParty(party)
+                }
             }
         }   
-    },
-    methods: {
-        ...mapActions('party',['registerParty']),
-        handleSubmit: function() {
-            this.newParty.date = $('#datetimepicker').datetimepicker('getValue');
-            this.registerParty(this.newParty)
-        }
     },
 }
 </script>

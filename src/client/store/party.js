@@ -1,5 +1,5 @@
 import { PartyService } from '@/client/service/party'
-import { retryAfterTokenRefresh } from './utilities'
+import { retryAfterTokenRefresh } from '@/client/utilities/RetryAfterTokenRefresh'
 const state = {
   party: {}, 
   status: "undefined",
@@ -7,17 +7,7 @@ const state = {
 }
 
 const actions = {
-  registerParty({commit}, party) {
-    retryAfterTokenRefresh(
-      (party) => {
-        commit("registerParty", party)
-        return PartyService.registerParty(party)
-      },
-      party,
-      result => commit("registerPartySucces", result),
-      error => commit("registerPartyFailure", error)
-    )
-  },
+
   findParties({commit}, {currentLocation, range}) {
     retryAfterTokenRefresh(
       (currentLocation, range) => {
@@ -32,19 +22,7 @@ const actions = {
 }
 
 const mutations = {
-  registerParty(state, party) {
-    state.status = "registeringParty"
-    state.party = party
-    state.foundParties = undefined
-  },
-  registerPartySucces(state, party) {
-    state.status = "registeredParty"
-    state.party = party
-  },
-  registerPartyFailure(state, error) {
-    state.status = "failedToRegisterParty"
-    state.error = error
-  },
+
   findingParties(state, currentLocation, range) {
     state = {
       status : "findingParties",
