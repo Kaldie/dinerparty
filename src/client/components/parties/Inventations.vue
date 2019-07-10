@@ -1,26 +1,27 @@
 <template>
-<b-modal :id="'inventations-' + party.id" :title="'Inventations of ' + party.name">
+
+<Modal :header="'lalal'" :id="'inventations-modal'">
     <div class="d-flex justify-content-center">
         <div class="flex-column justify-content-between"> 
             <div>Host:</div>
             <div>Client:</div>
         </div>
 
-        <div class="flex-column">
+        <div class="container column">
             <div class="d-flex">
-                    <b-button :variant="hostAccepedVariant()" @click="host=1" id="host-accept">Accepts</b-button>  
-                    <b-button :variant="hostDeclinesVariant()" @click="host=2" id="host-declines">Declines</b-button>  
+                    <a @click="host=1" id="host-accept">Accepts</a>  
+                    <a @click="host=2" id="host-declines">Declines</a>  
             </div>
 
             <div class="d-flex">
-                <b-button :variant="clientAccepedVariant()" @click="client=1">Accepts</b-button>  
-                <b-button :variant="clientDeclinesVariant()" @click="client=2">Declines</b-button>  
+                <a :variant="clientAccepedVariant()" @click="client=1">Accepts</a>  
+                <a :variant="clientDeclinesVariant()" @click="client=2">Declines</a>  
             </div>
 
         </div>
+        <a class=btn href="#">Cancel</a>
     </div>
-</b-modal>
-    
+</Modal>    
 </template>
 
 <style scoped>
@@ -33,11 +34,13 @@
 
 <script>
 
-
+import Modal from '../native_components/Modal'
+import Inventations from '@/client/components/parties/Inventations.vue';
 
 export default {
 
     name:'Inventations',
+    components: {Modal},
     data() {
         return {
             inventations : [],

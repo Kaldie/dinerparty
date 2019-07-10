@@ -78,18 +78,4 @@ a {
 svg {
   margin-right: 1mm;
 }
-
 </style>
-
-//  <script>
-// import {mapState, mapActions} from 'vuex'
-
-// export default {
-//   methods: {
-//     ...mapActions('account', ['logout']),
-//   },
-//   computed: {
-//     ...mapState('account', ['status','user'])
-//   },
-// } 
-// </script>

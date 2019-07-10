@@ -1,30 +1,21 @@
  <template name="User">
- <div>
+  <div>
     <div class="container" >
-        <div class="container column" id="user-container">
             <label for=user_name class="col-sm-2 col-form-label" >User Name</label>
-            <label for=email class="col-sm-2 col-form-label" >Email</label>
-            <label v-if="showPassword" for=password class="col-sm-2 col-form-label" >Password</label>
-        </div>
-
-        <div class="container column">
             <input id=user_name v-model="user.username" type="text" v-validate="{ required: true }" name="username"  placeholder="required"/>
+            <label for=email class="col-sm-2 col-form-label" >Email</label>
             <input id=email type="text" v-model="user.email" v-validate="{ required: true }" name="email" placeholder="required"/>
+
+            <label for=password v-if="showPassword"  class="col-sm-2 col-form-label" >Password</label>
             <input v-if="showPassword" id=password type="password" v-model="user.password" v-validate="{ required: true }" name="password"  placeholder="required"/>
-        </div>
-    </div>
 
-    <div class='container location-container'>
-      <div class="container column location-container">
-        <label for=location>Location</label>
-    </div>
 
-    <div class="container column location-container">
-        <input type="text" v-model="user.address" placeholder="Address" v-validate="{ required: false }" name="address" />
-        <input type="text" placeholder='City' v-model="user.city" name="City" />
+            <label for=location>Location</label>
+            <input type="text" v-model="user.address" placeholder="Address" v-validate="{ required: false }" name="address" />
+            <input type="text" placeholder='City' v-model="user.city" name="City" />
+
     </div>
   </div>
- </div>
 </template>
 
 <style scoped>
@@ -32,36 +23,26 @@
 
 
 .container {
-  justify-content: center;
-  margin-bottom: 0px;
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  grid-column-gap: 1em;
 }
 
-.container.column {
-  justify-content: space-between;
-  margin-right: 0.3em;
-}
-
-input{
-  margin: 0.1em;
+input {
+  justify-self: start;
 }
 
 label {
-  margin-top:auto;
-  margin-bottom: auto;
+  padding-top:3px;
+  padding-bottom: 3px;
+  justify-self: end;
 }
 
-label[for='location'] {
-  margin:auto;
-  margin-right: 1.3em;
+label[for=location] {
+  grid-row: 3/5;
+  align-self: center;
 }
 
-#user-container, #location-container {
-  align-items: flex-start;
-}
-
-div.location-container {
-  margin-top:0px;
-}
 
 </style>
 

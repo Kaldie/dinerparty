@@ -1,75 +1,35 @@
 <template>
+<Modal v-bind:header="'Reset Password'">
+    <div class="container">
 
-  <div id="open-modal" class="modal-window">
-    <div>
-      <h1>Reset Password</h1>
-
-      <div class="container">
-
-        <div class="container column" id=label-column>
-            <label label="Previous password" label-for="prev-password" invalid-feedback="Previous password is required">Previous password</label>
-            <label label="New password" label-for="new-password" invalid-feedback="Previous password is required">New password</label>
-            <label label="Repeat password" label-for="new-password-2" invalid-feedback="Previous password is required">Repeat password</label>
-        </div>
-
-        <div class="container column">
-            <input type=password id="prev-password" v-model="previousPassword" required autocomplete="current-password"/> 
-            <input type=password id="new-password" v-model="newPassword" required autocomplete="new-password"/> 
-            <input type=password id="new-password-2" v-model="repeatPassword" required autocomplete="new-password"/> 
-        </div>
-
+      <div class="container column" id=label-column>
+          <!-- <input type=text id="username" hidden class=flex-hidden/> -->
+          <label label="Previous password" label-for="prev-password" invalid-feedback="Previous password is required">Previous password</label>
+          <label label="New password" label-for="new-password" invalid-feedback="Previous password is required">New password</label>
+          <label label="Repeat password" label-for="new-password-2" invalid-feedback="Previous password is required">Repeat password</label>
       </div>
 
-      <div class=container id=button-container>
-        <a class=btn href="#">Cancel</a>
-        <a class=btn @click=handleSubmit>Accept</a>
+      <div class="container column">
+        <form>
+          <!-- <input type=text id="username" hidden/> -->
+          <input type=password id="prev-password" v-model="previousPassword" required autocomplete="current-password"/> 
+          <input type=password id="new-password" v-model="newPassword" required autocomplete="new-password"/> 
+          <input type=password id="new-password-2" v-model="repeatPassword" required autocomplete="new-password"/> 
+        </form>
       </div>
 
     </div>
-  </div>
+
+    <div class=container id=button-container>
+      <a class=btn href="#">Cancel</a>
+      <a class=btn @click=handleSubmit>Accept</a>
+    </div>
+
+</Modal>
 </template>
 
 <style lang="scss" scoped>
-.modal-window {
-  position: fixed;
-  background-color: rgba(0, 0, 0, 0.75);
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  z-index: 999;
-  opacity: 0;
-  pointer-events: none;
-  -webkit-transition: all 0.3s;
-  -moz-transition: all 0.3s;
-  transition: all 0.3s;
-  
-  &:target {
-    opacity: 1;
-    pointer-events: auto;
-  }
 
-  &>div {
-    width: 400px;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    padding: 2em;
-    background: #ffffff;
-    border-radius: 3px;
-  }
-
-  header {
-    font-weight: bold;
-  }
-
-  h1 {
-    font-size: 150%;
-    margin: 0 0 1px;
-  }
-
-}
 
 .container {
   justify-content: space-around;
@@ -96,8 +56,11 @@ input {
 
 <script>
 import {mapActions} from 'vuex'
+import Modal from './native_components/Modal'
 
 export default {
+  
+  components: { Modal },
   data() {
     return {
       previousPassword : "",
@@ -118,7 +81,7 @@ export default {
     handleSubmit() {
 
       if (this.repeatPassword !== this.newPassword) {
-        console.warn("passwords are not the same!")
+        // console.warn("passwords are not the same!")
         return
       }
 

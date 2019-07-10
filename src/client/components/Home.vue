@@ -1,5 +1,6 @@
 <template>
   <div>
+
     <Carousel v-bind:msg='{title:"Diner Party", msg:"Making hosting fun."}'/>
 
     <div class="container-fluid">
@@ -25,7 +26,7 @@
 </template>
 
 <script>
-import Carousel from './Carousel'
+import Carousel from './native_components/Carousel'
 export default {
   name: 'Home',
   components: {
@@ -54,4 +55,5 @@ a {
   border-width: 0px;
   font-size: 30px;
 }
+
 </style>

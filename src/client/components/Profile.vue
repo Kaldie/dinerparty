@@ -6,7 +6,7 @@
         <h1 id=header >{{header}}</h1>
         <User v-bind:showPassword="false" v-bind:showEmail="true" v-bind:showLocation="true"></User>
         
-        <div class="container column" id="button_container">
+        <div class="container" id="button_container">
             <router-link to="/" class="btn">Cancel</router-link> 
             <a class="btn" href="#open-modal" v-show="!showPassword">Reset Password</a>
             <a class="btn" @click="handleSubmit" :enabled="status.loggedIn">{{submitButtonText}}</a> 

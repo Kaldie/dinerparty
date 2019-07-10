@@ -9,7 +9,7 @@
 
 
     <div class="" id=date-picker-input>
-      <input :id="'datetimepicker-' + party.id" type="text" placeholder="Date" :disabled="formDisabled"/>
+      <input ref="datetimepicker" type="text" placeholder="Date" :disabled="formDisabled"/>
         <button class="input-group-text" v-on:click="showDateTime" :disabled="formDisabled">
           <font-awesome-icon icon="calendar"/>
         </button>
@@ -23,12 +23,12 @@
       </div>  
 
     <div v-if="showButton">
-        <button v-if="cancelShowButton" type="button" v-on:click="formCancel" class="btn btn-danger float-left" >{{cancelText}}</button>
-        <div class=float-right>
-          <a v-if="inventationShowButton" type="button" v-on:click="$bvModal.show('inventations-' + party.id)" class="btn">Invitations</a>
-          <a v-if="submitShowButton" type="button" v-on:click="formSubmit" class="btn ">{{submitText}}</a>
-        </div>
+      <a v-if="cancelShowButton" type="button" v-on:click="formCancel" class="btn btn-danger float-left" >{{cancelText}}</a>
+      <a class="btn" href="#inventations-modal" v-show="inventationShowButton">Invitations</a>
+      <!-- <a v-if="inventationShowButton" type="button" v-on:click="$bvModal.show('inventations-' + party.id)" class="btn">Invitations</a> -->
+      <a v-if="submitShowButton" type="button" v-on:click="formSubmit" class="btn ">{{submitText}}</a>
     </div>
+
     <Inventations v-bind:party="party"></Inventations>
 
 
@@ -66,13 +66,17 @@
       }
   },
   mounted: function() {
-    $(`#datetimepicker-${this.party.id}`).datetimepicker({
+    console.warn("this", this)
+    console.warn("$(this.$refs.datetimepicker)", $(this.$refs.datetimepicker))
+    console.warn("this.$refs.datetimepicker", this.$refs.datetimepicker)
+    
+    $(this.$refs.datetimepicker).datetimepicker({
       value:this.party.date
     });
   },
   methods: {
     showDateTime: function() {
-      $(`#datetimepicker-${this.party.id}`).datetimepicker('show');
+      $(this.$refs.datetimepicker).datetimepicker('show');
     },
     resetForm() {
         this.party = {
@@ -84,7 +88,7 @@
             image : undefined,
             date: ""
             }
-        $(`#datetimepicker-${this.party.id}`).datetimepicker('reset')
+        $(this.$refs.datetimepicker).datetimepicker('reset')
     },
     formCancel() {
         if( this.onClickCancel ) {
@@ -94,7 +98,7 @@
         }    
     },
     formSubmit() {
-      this.party.date = $(`#datetimepicker-${this.party.id}`).datetimepicker('getValue');
+      this.party.date = $(this.$refs.datetimepicker).datetimepicker('getValue');
       if (this.onClickSubmit) {
           this.onClickSubmit(this.party)
       }
@@ -111,7 +115,6 @@
 
 <style scoped lang="less">
 .container {
-
   justify-content: center;
 }
 
@@ -132,5 +135,9 @@
   label {
     margin-left: 0.1em;
   }
+}
+
+h4 {
+  margin:0px;
 }
 </style>

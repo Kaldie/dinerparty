@@ -1,23 +1,19 @@
 <template>
-    <b-card no-body class="mb-1">
-        <b-card-header header-tag="header" class="p-1" role="tab">
-            <b-button block href="#" v-b-toggle="'party-' + party.id" variant="info">{{party.name}} </b-button>
-        </b-card-header>
-        <b-collapse :id="'party-' + party.id" visible accordion="my-accordion" role="tabpanel">
-        <b-card-body>
-          <PartyContent v-bind:initialParty="party" v-bind="partyContent"></PartyContent>
-        </b-card-body>
-        </b-collapse>
-    </b-card>
+<Collapsable v-bind:header="party.name">
+    <PartyContent v-bind:initialParty="party" v-bind="partyContent"></PartyContent>
+</Collapsable>
+
 </template>
 
 <script>
 import PartyContent from '../party_carousel/PartyContent'
+import Collapsable from '../../native_components/Collapsable'
 import { PartyService } from '@/client/service/party';
 export default {
     name:"PartyItem",
     components: {
-        PartyContent
+        PartyContent,
+        Collapsable
     },
     props: {
         "party":Object
