@@ -33,7 +33,6 @@ $padding:0.2em;
 }
 
 .fade-enter {
-      transform: translateX(-10px);
       opacity: 0;
   }
   .fade-enter-active {
