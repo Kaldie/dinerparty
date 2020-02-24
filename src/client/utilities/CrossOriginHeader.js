@@ -1,1 +1,0 @@
-export const CrossOriginHeader = {"Access-Control-Allow-Origin": "127.0.0.1:5000"}
