@@ -17,7 +17,7 @@
     "@fortawesome/vue-fontawesome": "^0.1.4",
     "axios": "^0.18.1",
     "glyphicons": "^0.2.0",
-    "jquery": "^3.4",
+    "jquery": "^3.5",
     "moments": "^0.0.2",
     "object-to-formdata": "^1.6.4",
     "promise": "^8.0.2",
