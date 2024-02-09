@@ -1,5 +1,5 @@
-marshmellow
+marshmallow
 sqlalchemy
 flask
-flask-jwt-extend
+flask-jwt-extended
 flask-jwt
