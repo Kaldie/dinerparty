@@ -6,8 +6,7 @@ from flask import request
 from flask_restful import Resource
 from marshmallow import ValidationError
 from flask_jwt_extended import create_access_token, create_refresh_token
-from flask_jwt_extended import jwt_required, jwt_refresh_token_required, \
-    get_jwt_identity, get_raw_jwt
+from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
 
 from server.model.user import UserModel
 from server.model.revoked_token import RevokedTokenModel
@@ -147,7 +146,7 @@ class PasswordModification(Resource):
 class UserLogoutAccess(Resource):
     @jwt_required
     def post(self):
-            jTokenId = get_raw_jwt()['jti']
+            jTokenId = get_jwt()['jti']
             try:
                 revoked_token = RevokedTokenModel(jTokenId=jTokenId)
                 revoked_token.add()
@@ -157,9 +156,9 @@ class UserLogoutAccess(Resource):
 
 
 class UserLogoutRefresh(Resource):
-    @jwt_refresh_token_required
+    @jwt_required(refresh=True)
     def post(self):
-            jTokenId = get_raw_jwt()['jti']
+            jTokenId = get_jwt()['jti']
             try:
                 revoked_token = RevokedTokenModel(jTokenId=jTokenId)
                 revoked_token.add()
@@ -170,7 +169,7 @@ class UserLogoutRefresh(Resource):
 
 
 class TokenRefresh(Resource):
-        @jwt_refresh_token_required
+        @jwt_required(refresh=True)
         def post(self):
             current_user = get_jwt_identity()
             access_token = create_access_token(identity=current_user)

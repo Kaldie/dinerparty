@@ -5,7 +5,7 @@ from server.model.party import PartyModel
 from server.model.party_participation import PartyParticipationModel
 
 
-class UserSchema(ma.ModelSchema):
+class UserSchema(ma.Schema):
   piiSensitive = ["hosted_parties", "postalCode", "address", "city",'email']
   email = fields.Email()
   password = fields.Function(deserialize = lambda password: UserModel.generate_hash(password), load_only=True,)

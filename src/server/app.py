@@ -7,6 +7,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
 from flask_jwt_extended import JWTManager
 
+
 app = Flask(__name__, static_url_path="")
 
 # add cross origin request sharing
@@ -33,12 +34,7 @@ Flask.env = "debug"
 Flask.Debug = True
 
 
-@app.before_first_request
-def create_tables():
-    db.create_all()
-
-
-@jwt.token_in_blacklist_loader
+@jwt.token_in_blocklist_loader
 def check_if_token_in_blacklist(decrypted_token):
     jti = decrypted_token['jti']
     return RevokedTokenModel.is_jti_blacklisted(jti)
@@ -68,3 +64,6 @@ api.add_resource(parties.PartiesInRange, '/parties/range')
 api.add_resource(party_participation.PartyParticipations, '/participations/<string:partyId>')
 api.add_resource(party_participation.PendingPartyParticipations, '/participations/pending/<string:partyId>')
 api.add_resource(party_participation.PartyParticipation, '/participation/<string:participationId>')
+
+with app.app_context() as context:
+    db.create_all()

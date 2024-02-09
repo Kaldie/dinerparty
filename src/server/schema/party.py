@@ -5,7 +5,7 @@ from server.model.party import PartyModel
 from server.schema.user import UserSchema
 from marshmallow import fields
 
-class PartySchema(ma.ModelSchema):
+class PartySchema(ma.Schema):
   host = fields.Nested(UserSchema, exclude=UserSchema.piiSensitive)
 
   class Meta:

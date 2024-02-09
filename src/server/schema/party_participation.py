@@ -7,7 +7,7 @@ from server.model.party_participation import PartyParticipationModel
 from server.schema.user import UserSchema
 from server.schema.party import PartySchema
 
-class PartyParticipationSchema(ma.ModelSchema):
+class PartyParticipationSchema(ma.Schema):
  
   user = fields.Nested(UserSchema, exclude=UserSchema.piiSensitive)
   party = fields.Nested(PartySchema, exclude=["host", "longitude", "latitude", "participation"])
