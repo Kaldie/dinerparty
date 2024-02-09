@@ -7,13 +7,14 @@ from server.model.party_participation import PartyParticipationModel
 from server.schema.user import UserSchema
 from server.schema.party import PartySchema
 
-class PartyParticipationSchema(ma.Schema):
+class PartyParticipationSchema(ma.SQLAlchemyAutoSchema):
  
   user = fields.Nested(UserSchema, exclude=UserSchema.piiSensitive)
   party = fields.Nested(PartySchema, exclude=["host", "longitude", "latitude", "participation"])
 
   class Meta:
     model = PartyParticipationModel
+    load_instance = True
 
 def sumerizeParticipation(participations):
   logger.debug("participations %s", participations)

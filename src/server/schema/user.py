@@ -5,14 +5,14 @@ from server.model.party import PartyModel
 from server.model.party_participation import PartyParticipationModel
 
 
-class UserSchema(ma.Schema):
+class UserSchema(ma.SQLAlchemyAutoSchema):
   piiSensitive = ["hosted_parties", "postalCode", "address", "city",'email']
   email = fields.Email()
   password = fields.Function(deserialize = lambda password: UserModel.generate_hash(password), load_only=True,)
   
   class Meta:
     model = UserModel
-
+    load_instance = True
   def return_all(self):
     print("UserModel.return_all()", self.dump(UserModel.return_all(), many=True))
     return self.dump(UserModel.return_all(), many=True)

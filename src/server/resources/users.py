@@ -20,7 +20,8 @@ class UserException(Exception):
 class UserRegistration(Resource):
     def post(self):
         try:
-            newUser = UserSchema(partial=True).load(request.values).data
+            print(request.json)
+            newUser = UserSchema(partial=True).load(request.json)
         except ValidationError:
             return "User is not properly defined:"
 

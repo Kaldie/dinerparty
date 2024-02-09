@@ -8,3 +8,4 @@ flask-jwt-extended
 marshmallow
 passlib
 sqlalchemy
+marshmallow-sqlalchemy
